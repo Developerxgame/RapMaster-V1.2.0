@@ -45,6 +45,27 @@ body {
   background: rgba(139, 92, 246, 0.7);
 }
 
+/* Game-specific button styles */
+.game-button {
+  @apply bg-gradient-to-r from-neon-cyan to-neon-purple text-white font-semibold py-3 px-6 rounded-game shadow-glow transition-all duration-300 active:scale-95;
+}
+
+.game-button:hover {
+  @apply shadow-glow-lg;
+}
+
+.game-button-secondary {
+  @apply bg-dark-surface/60 border border-dark-border text-text-primary font-medium py-3 px-6 rounded-game hover:bg-dark-surface/80 transition-all duration-300;
+}
+
+.game-card {
+  @apply bg-dark-surface/60 backdrop-blur-sm border border-dark-border/30 rounded-game-lg;
+}
+
+.hover-glow:hover {
+  @apply shadow-glow-lg;
+}
+
 /* iOS-style premium components */
 .ios-card {
   @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl;

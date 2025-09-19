@@ -247,7 +247,7 @@ export default function SettingsPage() {
           transition={{ delay: 0.4 }}
         >
           <h3 className="text-lg font-bold mb-2 neon-text">RapMaster Simulator</h3>
-          <p className="text-text-secondary mb-2">Version 1.0.0</p>
+          <p className="text-text-secondary mb-2">Version 1.2.0</p>
           <p className="text-text-muted text-sm">© 2024 FHX Studios. All rights reserved.</p>
         </motion.div>
       </div>

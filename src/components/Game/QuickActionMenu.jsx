@@ -15,13 +15,8 @@ const {
   FiVideo, 
   FiDisc, 
   FiMic, 
-  FiCalendar,
-  FiTrendingUp,
   FiUsers,
-  FiDollarSign,
-  FiEdit3,
-  FiUpload,
-  FiPlay
+  FiTrendingUp
 } = FiIcons;
 
 export default function QuickActionMenu() {
@@ -33,7 +28,7 @@ export default function QuickActionMenu() {
     {
       id: 'skills',
       title: 'Skills',
-      description: 'Improve your abilities',
+      description: 'Improve abilities',
       icon: FiTarget,
       color: 'bg-gradient-to-br from-cyan-400 to-blue-500',
       action: () => navigate('/game/skills')
@@ -71,48 +66,14 @@ export default function QuickActionMenu() {
       action: () => navigate('/game/collaborations')
     },
     {
-      id: 'release-track',
-      title: 'Release Track',
-      description: 'Quick track release',
+      id: 'studio',
+      title: 'Studio',
+      description: 'Create music',
       icon: FiMusic,
       color: 'bg-gradient-to-br from-indigo-400 to-purple-500',
-      action: () => handleQuickRelease('track')
-    },
-    {
-      id: 'release-video',
-      title: 'Music Video',
-      description: 'Quick video release',
-      icon: FiVideo,
-      color: 'bg-gradient-to-br from-red-500 to-orange-500',
-      action: () => handleQuickRelease('video')
-    },
-    {
-      id: 'release-album',
-      title: 'Album',
-      description: 'Quick album release',
-      icon: FiDisc,
-      color: 'bg-gradient-to-br from-violet-400 to-purple-500',
-      action: () => handleQuickRelease('album')
+      action: () => navigate('/game/studio')
     }
   ];
-
-  const handleQuickRelease = (type) => {
-    // Navigate to studio with specific tab
-    navigate('/game/studio');
-    setIsOpen(false);
-    
-    // Add notification for guidance
-    dispatch({
-      type: 'ADD_NOTIFICATION',
-      payload: {
-        id: Date.now(),
-        type: 'info',
-        title: `${type === 'track' ? 'Track' : type === 'video' ? 'Music Video' : 'Album'} Release`,
-        message: `Navigate to the ${type === 'track' ? 'Create Track' : type === 'video' ? 'Music Video' : 'Create Album'} tab to create and release your content.`,
-        timestamp: new Date().toISOString()
-      }
-    });
-  };
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -156,30 +117,30 @@ export default function QuickActionMenu() {
         )}
       </AnimatePresence>
 
-      {/* Quick Action Grid */}
+      {/* Quick Action Grid - Optimized for Mobile */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed bottom-44 right-6 z-40"
+            className="fixed bottom-44 right-4 left-4 z-40"
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-4 shadow-2xl">
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-4 shadow-2xl max-w-mobile mx-auto">
               {/* Header */}
               <div className="text-center mb-4">
                 <h3 className="text-white font-bold text-sm mb-1">Quick Actions</h3>
-                <p className="text-gray-300 text-xs">Tap to access features</p>
+                <p className="text-gray-300 text-xs">Tap any action to access</p>
               </div>
 
-              {/* Action Grid */}
-              <div className="grid grid-cols-2 gap-3 w-64">
+              {/* Action Grid - Responsive 2x3 layout */}
+              <div className="grid grid-cols-2 gap-3">
                 {quickActions.map((action, index) => (
                   <motion.button
                     key={action.id}
                     onClick={() => handleActionClick(action)}
-                    className="flex flex-col items-center p-3 rounded-2xl transition-all active:scale-95"
+                    className="flex flex-col items-center p-4 rounded-2xl transition-all active:scale-95 min-h-[80px]"
                     style={{ background: action.color }}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -190,10 +151,10 @@ export default function QuickActionMenu() {
                     <div className="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center mb-2">
                       <SafeIcon icon={action.icon} className="text-white text-lg" />
                     </div>
-                    <span className="text-white font-semibold text-xs text-center leading-tight">
+                    <span className="text-white font-semibold text-xs text-center leading-tight mb-1">
                       {action.title}
                     </span>
-                    <span className="text-white/80 text-xs text-center mt-1 leading-tight">
+                    <span className="text-white/80 text-xs text-center leading-tight">
                       {action.description}
                     </span>
                   </motion.button>
@@ -202,7 +163,7 @@ export default function QuickActionMenu() {
 
               {/* Quick Stats */}
               <div className="mt-4 pt-4 border-t border-white/20">
-                <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="grid grid-cols-3 gap-3 text-center">
                   <div>
                     <div className="text-sm font-bold text-cyan-400">{state.player.fame}</div>
                     <div className="text-xs text-gray-300">Fame</div>

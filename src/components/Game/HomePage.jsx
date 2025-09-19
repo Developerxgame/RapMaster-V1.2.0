@@ -136,8 +136,6 @@ export default function HomePage() {
   const trendingReleases = releases.filter(r => r.trending).length;
   const chartHits = releases.filter(r => r.chartPosition && r.chartPosition <= 10).length;
 
-  const yearsLeft = 60 - player.age;
-
   // Check for milestones that could be shared
   const checkMilestones = () => {
     const milestones = [];
@@ -178,7 +176,7 @@ export default function HomePage() {
             </div>
             <div className="flex items-center space-x-2">
               <SafeIcon icon={FiCalendar} className="text-cyan-400" />
-              <span className="font-medium text-white">{yearsLeft} years left</span>
+              <span className="font-medium text-white">Week {player.week}</span>
             </div>
           </div>
         </motion.div>

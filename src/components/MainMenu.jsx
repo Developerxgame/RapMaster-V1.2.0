@@ -252,7 +252,7 @@ export default function MainMenu() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <p>Version 1.0.0</p>
+          <p>Version 1.2.0</p>
           <p className="mt-1">© 2024 FHX Studios</p>
         </motion.div>
       </div>

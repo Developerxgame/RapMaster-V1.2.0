@@ -48,7 +48,7 @@ export default function Header() {
               {getMonthName(player.week)} {player.year}
             </div>
             <div className="text-xs text-text-muted">
-              Age {player.age} • {yearsLeft} years left
+              Age {player.age}
             </div>
           </div>
           <div className="w-16 h-2 progress-bar">
