@@ -35,6 +35,7 @@ const initialState = {
   albums: [],
   musicVideos: [],
   concerts: [],
+  collaborations: [],
   socialPosts: [],
   releases: [],
   earnings: {
@@ -56,10 +57,7 @@ function gameReducer(state, action) {
     case 'CREATE_CHARACTER':
       return {
         ...state,
-        player: {
-          ...state.player,
-          ...action.payload
-        },
+        player: { ...state.player, ...action.payload },
         gameStarted: true
       };
 
@@ -70,17 +68,12 @@ function gameReducer(state, action) {
       };
 
     case 'RESET_GAME':
-      return {
-        ...initialState
-      };
+      return { ...initialState };
 
     case 'UPDATE_PLAYER':
       const newState = {
         ...state,
-        player: {
-          ...state.player,
-          ...action.payload
-        }
+        player: { ...state.player, ...action.payload }
       };
       // Auto-save when player data changes
       if (newState.slot) {
@@ -104,6 +97,12 @@ function gameReducer(state, action) {
       return {
         ...state,
         musicVideos: [...state.musicVideos, action.payload]
+      };
+
+    case 'ADD_COLLABORATION':
+      return {
+        ...state,
+        collaborations: [...state.collaborations, action.payload]
       };
 
     case 'ADD_CONCERT':
@@ -159,29 +158,27 @@ function gameReducer(state, action) {
     case 'RELEASE_CONTENT':
       // Enhanced release system with initial views based on quality and fame
       const { contentId, type, title, quality, platform } = action.payload;
-      
+
       // Calculate initial views boost based on player stats
       const fameBoost = Math.floor(state.player.fame * 2);
       const fanBoost = Math.floor(state.player.fans * 0.1);
       const socialBoost = type === 'video' 
         ? Math.floor(state.player.socialMedia.raptube.subscribers * 0.05)
         : Math.floor(state.player.socialMedia.rapify.listeners * 0.03);
-      
+
       // Quality multiplier for initial views
       const qualityMultiplier = Math.max(0.5, quality / 10);
-      
+
       // Base initial views
-      const baseInitialViews = type === 'video' ? 500 : 
-                              type === 'album' ? 300 : 200;
-      
+      const baseInitialViews = type === 'video' ? 500 : type === 'album' ? 300 : 200;
+
       // Calculate total initial views
       const initialViews = Math.floor(
         (baseInitialViews + fameBoost + fanBoost + socialBoost) * qualityMultiplier
       );
-      
+
       // Calculate initial earnings
-      const viewValue = type === 'video' ? 0.08 : 
-                       type === 'album' ? 0.20 : 0.15;
+      const viewValue = type === 'video' ? 0.08 : type === 'album' ? 0.20 : 0.15;
       const initialEarnings = initialViews * viewValue;
 
       const newRelease = {
@@ -206,24 +203,29 @@ function gameReducer(state, action) {
         releaseWeek: state.player.week,
         ageMultiplier: 1.0
       };
-      
+
       return {
         ...state,
         releases: [...state.releases, newRelease],
-        tracks: state.tracks.map(track => 
-          track.id === contentId 
+        tracks: state.tracks.map(track =>
+          track.id === contentId
             ? { ...track, released: true, releaseId: newRelease.id }
             : track
         ),
-        albums: state.albums.map(album => 
-          album.id === contentId 
+        albums: state.albums.map(album =>
+          album.id === contentId
             ? { ...album, released: true, releaseId: newRelease.id }
             : album
         ),
-        musicVideos: state.musicVideos.map(video => 
-          video.id === contentId 
+        musicVideos: state.musicVideos.map(video =>
+          video.id === contentId
             ? { ...video, released: true, releaseId: newRelease.id }
             : video
+        ),
+        collaborations: state.collaborations.map(collab =>
+          collab.id === contentId
+            ? { ...collab, released: true, releaseId: newRelease.id }
+            : collab
         ),
         player: {
           ...state.player,
@@ -249,12 +251,11 @@ function gameReducer(state, action) {
 
     case 'ANNOUNCE_RELEASE':
       const { releaseId } = action.payload;
-      
       const baseReach = Math.floor(state.player.fans * 0.4 + state.player.socialMedia.rapgram.followers * 0.3);
       const announcementViews = Math.floor(baseReach * (0.5 + Math.random() * 0.8));
       const announcementEarnings = announcementViews * 0.12;
-      
       const release = state.releases.find(r => r.id === releaseId);
+
       const announcementPost = {
         id: Date.now(),
         platform: 'rapgram',
@@ -273,7 +274,7 @@ function gameReducer(state, action) {
         id: Date.now() + 1,
         platform: 'riktok'
       };
-      
+
       return {
         ...state,
         releases: state.releases.map(rel =>
@@ -341,52 +342,45 @@ function gameReducer(state, action) {
       // Enhanced views system with realistic decay and viral potential
       let weeklyEarnings = 0;
       let weeklyViews = 0;
+
       const updatedReleasesWeek = state.releases.map(release => {
         if (release.views === 0) return release;
-        
+
         // Age factor - content gets less views over time
         const weeksOld = state.player.week - (release.releaseWeek || 0);
         const ageDecay = Math.max(0.1, 1 - (weeksOld * 0.05)); // 5% decay per week
-        
+
         // Base views calculation with multiple factors
         const baseViews = Math.floor(Math.random() * 2000) + 500;
         const qualityMultiplier = Math.max(0.3, release.quality / 10);
         const fameMultiplier = Math.max(0.2, state.player.fame / 200);
         const fanMultiplier = Math.max(0.1, state.player.fans / 3000);
-        
+
         // Viral potential based on current performance
         const viralChance = release.peakWeeklyViews > 50000 ? 0.15 : 0.05;
         const isViralWeek = Math.random() < viralChance;
         const viralMultiplier = isViralWeek ? (2 + Math.random() * 3) : 1;
-        
+
         // Platform-specific multipliers
-        const platformMultiplier = release.type === 'video' ? 1.2 : 
-                                 release.type === 'album' ? 1.5 : 1.0;
-        
+        const platformMultiplier = release.type === 'video' ? 1.2 : release.type === 'album' ? 1.5 : 1.0;
+
         // Calculate final weekly views
         const weeklyViewGain = Math.floor(
-          baseViews * 
-          qualityMultiplier * 
-          fameMultiplier * 
-          fanMultiplier * 
-          ageDecay * 
-          viralMultiplier * 
-          platformMultiplier
+          baseViews * qualityMultiplier * fameMultiplier * fanMultiplier * ageDecay * viralMultiplier * platformMultiplier
         );
-        
+
         // Earnings calculation with platform-specific rates
-        const viewValue = release.type === 'video' ? 0.08 : 
-                         release.type === 'album' ? 0.20 : 0.15;
+        const viewValue = release.type === 'video' ? 0.08 : release.type === 'album' ? 0.20 : 0.15;
         const earnings = weeklyViewGain * viewValue;
-        
+
         weeklyEarnings += earnings;
         weeklyViews += weeklyViewGain;
-        
+
         // Update view statistics
         const newTotalViews = release.views + weeklyViewGain;
         const newWeeklyViews = weeklyViewGain;
         const newPeakWeekly = Math.max(release.peakWeeklyViews, newWeeklyViews);
-        
+
         // Chart position calculation
         let chartPosition = release.chartPosition;
         if (newTotalViews > 1000000 && !chartPosition) {
@@ -394,11 +388,11 @@ function gameReducer(state, action) {
         } else if (newTotalViews > 500000 && (!chartPosition || chartPosition > 50)) {
           chartPosition = Math.floor(Math.random() * 50) + 1; // Top 50
         }
-        
+
         // Trending status
         const trending = newWeeklyViews > 25000 && newWeeklyViews < 100000;
         const isViral = newTotalViews > 1000000 || newWeeklyViews > 100000;
-        
+
         return {
           ...release,
           views: newTotalViews,
@@ -417,41 +411,38 @@ function gameReducer(state, action) {
           ageMultiplier: ageDecay,
           releaseWeek: release.releaseWeek || state.player.week,
           // Performance metrics
-          avgWeeklyViews: release.viewsHistory ? 
-            release.viewsHistory.reduce((sum, h) => sum + h.views, 0) / release.viewsHistory.length : 
-            newWeeklyViews,
-          growthRate: release.weeklyViews ? 
-            ((newWeeklyViews - release.weeklyViews) / release.weeklyViews * 100) : 0
+          avgWeeklyViews: release.viewsHistory 
+            ? release.viewsHistory.reduce((sum, h) => sum + h.views, 0) / release.viewsHistory.length 
+            : newWeeklyViews,
+          growthRate: release.weeklyViews 
+            ? ((newWeeklyViews - release.weeklyViews) / release.weeklyViews * 100) 
+            : 0
         };
       });
 
       // Enhanced social media growth based on fans and content performance
       const totalReleaseViews = updatedReleasesWeek.reduce((sum, release) => sum + (release.weeklyViews || 0), 0);
-      
+
       const newSocialMedia = {
         ...state.player.socialMedia,
         rapgram: {
           ...state.player.socialMedia.rapgram,
-          followers: Math.floor(state.player.socialMedia.rapgram.followers + 
-            (state.player.fans * 0.6) + (fanGrowthMultiplier * 50) + (totalReleaseViews * 0.01))
+          followers: Math.floor(state.player.socialMedia.rapgram.followers + (state.player.fans * 0.6) + (fanGrowthMultiplier * 50) + (totalReleaseViews * 0.01))
         },
         raptube: {
           ...state.player.socialMedia.raptube,
-          subscribers: Math.floor(state.player.socialMedia.raptube.subscribers + 
-            (state.player.fans * 0.4) + (viewsMultiplier * 20)),
+          subscribers: Math.floor(state.player.socialMedia.raptube.subscribers + (state.player.fans * 0.4) + (viewsMultiplier * 20)),
           totalViews: state.player.socialMedia.raptube.totalViews + weeklyViews,
           videos: state.musicVideos.filter(v => v.released).length
         },
         rapify: {
           ...state.player.socialMedia.rapify,
-          listeners: Math.floor(state.player.socialMedia.rapify.listeners + 
-            (state.player.fans * 0.8) + (fanGrowthMultiplier * 100)),
+          listeners: Math.floor(state.player.socialMedia.rapify.listeners + (state.player.fans * 0.8) + (fanGrowthMultiplier * 100)),
           streams: state.player.socialMedia.rapify.streams + Math.floor(weeklyViews * 1.2)
         },
         riktok: {
           ...state.player.socialMedia.riktok,
-          followers: Math.floor(state.player.socialMedia.riktok.followers + 
-            (state.player.fans * 0.7) + (fanGrowthMultiplier * 80))
+          followers: Math.floor(state.player.socialMedia.riktok.followers + (state.player.fans * 0.7) + (fanGrowthMultiplier * 80))
         }
       };
 
@@ -459,7 +450,7 @@ function gameReducer(state, action) {
       const milestoneNotifications = [];
       const viralReleases = updatedReleasesWeek.filter(r => r.isViral && !r.viralNotified);
       const chartHits = updatedReleasesWeek.filter(r => r.chartPosition && r.chartPosition <= 10 && !r.chartNotified);
-      
+
       if (viralReleases.length > 0) {
         viralReleases.forEach(release => {
           milestoneNotifications.push({
@@ -472,7 +463,7 @@ function gameReducer(state, action) {
           release.viralNotified = true;
         });
       }
-      
+
       if (chartHits.length > 0) {
         chartHits.forEach(release => {
           milestoneNotifications.push({
@@ -493,7 +484,7 @@ function gameReducer(state, action) {
           week: resetWeek,
           year: newYear,
           age: newAge,
-          energy: 100,
+          energy: 100, // Refill energy
           netWorth: Math.max(0, state.player.netWorth + weeklyEarnings),
           socialMedia: newSocialMedia
         },
@@ -557,6 +548,7 @@ function gameReducer(state, action) {
       };
 
       const cost = getUpgradeCost(state.player.skills[action.payload.skill]);
+
       return {
         ...state,
         player: {
@@ -581,7 +573,10 @@ export function GameProvider({ children }) {
     if (!state.gameStarted || !state.slot) return;
 
     const interval = setInterval(() => {
-      const currentState = { ...state, lastPlayed: new Date().toISOString() };
+      const currentState = {
+        ...state,
+        lastPlayed: new Date().toISOString()
+      };
       localStorage.setItem(`rapCareer_slot_${state.slot}`, JSON.stringify(currentState));
     }, 30000);
 

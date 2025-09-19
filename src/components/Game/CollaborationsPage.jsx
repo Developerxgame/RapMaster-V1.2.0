@@ -4,7 +4,18 @@ import { motion } from 'framer-motion';
 import SafeIcon from '../../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 
-const { FiUsers, FiStar, FiDollarSign, FiZap, FiMusic, FiTrendingUp, FiCheck, FiX, FiClock, FiAward } = FiIcons;
+const { 
+  FiUsers, 
+  FiStar, 
+  FiDollarSign, 
+  FiZap, 
+  FiMusic, 
+  FiTrendingUp, 
+  FiCheck, 
+  FiX, 
+  FiClock, 
+  FiAward 
+} = FiIcons;
 
 export default function CollaborationsPage() {
   const { state, dispatch } = useGame();
@@ -153,7 +164,9 @@ export default function CollaborationsPage() {
   };
 
   const canCollaborate = (artist) => {
-    return player.fame >= artist.requirements.fame && player.energy >= artist.energy && player.netWorth >= artist.cost;
+    return player.fame >= artist.requirements.fame && 
+           player.energy >= artist.energy && 
+           player.netWorth >= artist.cost;
   };
 
   const formatPrice = (price) => {
@@ -164,19 +177,19 @@ export default function CollaborationsPage() {
 
   if (collaborating && selectedArtist) {
     return (
-      <div className="min-h-screen bg-dark-bg flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center px-4">
         <motion.div
-          className="text-center game-card p-8 shadow-glow-xl"
+          className="text-center bg-white/10 backdrop-blur-md p-8 rounded-3xl shadow-2xl border border-white/20"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
         >
           <div className="text-6xl mb-4">{selectedArtist.avatar}</div>
-          <h2 className="text-xl font-bold text-text-primary mb-2">
+          <h2 className="text-xl font-bold text-white mb-2">
             Collaborating with {selectedArtist.name}
           </h2>
-          <p className="text-text-muted mb-6">Creating something amazing together...</p>
+          <p className="text-gray-300 mb-6">Creating something amazing together...</p>
           <div className="flex justify-center">
-            <div className="w-8 h-8 border-3 border-neon-cyan border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-3 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
           </div>
         </motion.div>
       </div>
@@ -184,36 +197,36 @@ export default function CollaborationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg pb-24 pt-16">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 pb-24 pt-16">
       <div className="px-4 space-y-4 max-w-mobile mx-auto">
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-xl font-bold text-text-primary mb-2">Collaborations</h1>
-          <p className="text-text-muted text-sm">Work with other artists to create hits</p>
+          <h1 className="text-2xl font-bold text-white mb-2">Collaborations</h1>
+          <p className="text-gray-300 text-sm">Work with other artists to create hits</p>
         </div>
 
         {/* Player Status */}
-        <div className="game-card p-4 shadow-dark">
+        <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 shadow-xl">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
-              <div className="text-lg font-bold text-neon-orange animate-neon">{player.energy}/100</div>
-              <div className="text-xs text-text-muted">Energy</div>
+              <div className="text-lg font-bold text-orange-400">{player.energy}/100</div>
+              <div className="text-xs text-gray-300">Energy</div>
             </div>
             <div>
-              <div className="text-lg font-bold text-neon-cyan animate-neon">{player.fame}</div>
-              <div className="text-xs text-text-muted">Fame</div>
+              <div className="text-lg font-bold text-cyan-400">{player.fame}</div>
+              <div className="text-xs text-gray-300">Fame</div>
             </div>
             <div>
-              <div className="text-lg font-bold text-neon-green animate-neon">{formatPrice(player.netWorth)}</div>
-              <div className="text-xs text-text-muted">Net Worth</div>
+              <div className="text-lg font-bold text-green-400">{formatPrice(player.netWorth)}</div>
+              <div className="text-xs text-gray-300">Net Worth</div>
             </div>
           </div>
         </div>
 
         {/* Collaboration Benefits */}
-        <div className="bg-gradient-to-r from-neon-purple/20 to-neon-pink/20 border border-neon-purple/30 p-4 rounded-game-lg text-text-primary shadow-glow">
+        <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/30 p-4 rounded-2xl text-white shadow-xl">
           <h3 className="font-bold text-sm mb-2">🤝 Collaboration Benefits</h3>
-          <div className="text-xs text-text-secondary space-y-1">
+          <div className="text-xs text-gray-200 space-y-1">
             <p>• Higher quality tracks than solo work</p>
             <p>• Massive fame and reputation boost</p>
             <p>• Access to new audiences</p>
@@ -223,16 +236,15 @@ export default function CollaborationsPage() {
 
         {/* Available Artists */}
         <div>
-          <h2 className="text-base font-bold text-text-primary mb-3">Available Artists</h2>
+          <h2 className="text-base font-bold text-white mb-3">Available Artists</h2>
           <div className="space-y-3">
             {artists.map((artist, index) => {
               const available = canCollaborate(artist);
-              
               return (
                 <motion.div
                   key={artist.id}
-                  className={`game-card transition-all ${
-                    available ? 'hover:shadow-glow' : 'opacity-60'
+                  className={`bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl transition-all ${
+                    available ? 'hover:bg-white/20' : 'opacity-60'
                   }`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -241,26 +253,26 @@ export default function CollaborationsPage() {
                   <div className="p-4">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-neon-cyan to-neon-purple rounded-game flex items-center justify-center text-xl shadow-glow">
+                        <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-2xl flex items-center justify-center text-xl shadow-lg">
                           {artist.avatar}
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-bold text-text-primary text-sm">{artist.name}</h3>
-                          <p className="text-neon-cyan font-medium text-xs">{artist.genre}</p>
-                          <p className="text-xs text-text-muted mb-2">{artist.bio}</p>
+                          <h3 className="font-bold text-white text-sm">{artist.name}</h3>
+                          <p className="text-cyan-400 font-medium text-xs">{artist.genre}</p>
+                          <p className="text-xs text-gray-300 mb-2">{artist.bio}</p>
                           <div className="flex items-center space-x-1 mb-1">
                             {[...Array(5)].map((_, i) => (
                               <SafeIcon
                                 key={i}
                                 icon={FiStar}
                                 className={`text-xs ${
-                                  i < Math.floor(artist.fame / 20) ? 'text-neon-orange' : 'text-text-disabled'
+                                  i < Math.floor(artist.fame / 20) ? 'text-orange-400' : 'text-gray-500'
                                 }`}
                               />
                             ))}
-                            <span className="text-xs text-text-muted ml-2">{artist.fame} Fame</span>
+                            <span className="text-xs text-gray-300 ml-2">{artist.fame} Fame</span>
                           </div>
-                          <div className="text-xs text-neon-purple">
+                          <div className="text-xs text-purple-400">
                             Specialty: {artist.specialty}
                           </div>
                         </div>
@@ -269,33 +281,33 @@ export default function CollaborationsPage() {
 
                     {/* Stats */}
                     <div className="grid grid-cols-4 gap-2 mb-4">
-                      <div className="text-center p-2 bg-dark-surface/30 rounded-game">
-                        <SafeIcon icon={FiDollarSign} className="text-neon-green mx-auto mb-1 text-sm" />
-                        <div className="text-sm font-bold text-text-primary">{formatPrice(artist.cost)}</div>
-                        <div className="text-xs text-text-muted">Cost</div>
+                      <div className="text-center p-2 bg-black/20 rounded-2xl">
+                        <SafeIcon icon={FiDollarSign} className="text-green-400 mx-auto mb-1 text-sm" />
+                        <div className="text-sm font-bold text-white">{formatPrice(artist.cost)}</div>
+                        <div className="text-xs text-gray-300">Cost</div>
                       </div>
-                      <div className="text-center p-2 bg-dark-surface/30 rounded-game">
-                        <SafeIcon icon={FiZap} className="text-neon-orange mx-auto mb-1 text-sm" />
-                        <div className="text-sm font-bold text-text-primary">{artist.energy}</div>
-                        <div className="text-xs text-text-muted">Energy</div>
+                      <div className="text-center p-2 bg-black/20 rounded-2xl">
+                        <SafeIcon icon={FiZap} className="text-orange-400 mx-auto mb-1 text-sm" />
+                        <div className="text-sm font-bold text-white">{artist.energy}</div>
+                        <div className="text-xs text-gray-300">Energy</div>
                       </div>
-                      <div className="text-center p-2 bg-dark-surface/30 rounded-game">
-                        <SafeIcon icon={FiTrendingUp} className="text-neon-cyan mx-auto mb-1 text-sm" />
-                        <div className="text-sm font-bold text-text-primary">+{artist.fameBoost}</div>
-                        <div className="text-xs text-text-muted">Fame</div>
+                      <div className="text-center p-2 bg-black/20 rounded-2xl">
+                        <SafeIcon icon={FiTrendingUp} className="text-cyan-400 mx-auto mb-1 text-sm" />
+                        <div className="text-sm font-bold text-white">+{artist.fameBoost}</div>
+                        <div className="text-xs text-gray-300">Fame</div>
                       </div>
-                      <div className="text-center p-2 bg-dark-surface/30 rounded-game">
-                        <SafeIcon icon={FiAward} className="text-neon-purple mx-auto mb-1 text-sm" />
-                        <div className="text-sm font-bold text-text-primary">+{artist.qualityBonus}</div>
-                        <div className="text-xs text-text-muted">Quality</div>
+                      <div className="text-center p-2 bg-black/20 rounded-2xl">
+                        <SafeIcon icon={FiAward} className="text-purple-400 mx-auto mb-1 text-sm" />
+                        <div className="text-sm font-bold text-white">+{artist.qualityBonus}</div>
+                        <div className="text-xs text-gray-300">Quality</div>
                       </div>
                     </div>
 
                     {/* Requirements */}
                     {!available && (
-                      <div className="mb-3 p-3 bg-neon-red/10 border border-neon-red/30 rounded-game">
-                        <p className="text-xs text-neon-red font-medium">Requirements not met:</p>
-                        <div className="text-xs text-neon-red mt-1">
+                      <div className="mb-3 p-3 bg-red-500/10 border border-red-400/30 rounded-2xl">
+                        <p className="text-xs text-red-400 font-medium">Requirements not met:</p>
+                        <div className="text-xs text-red-400 mt-1">
                           {player.fame < artist.requirements.fame && (
                             <span>• Need {artist.requirements.fame} fame (you have {player.fame})</span>
                           )}
@@ -312,10 +324,10 @@ export default function CollaborationsPage() {
                     <button
                       onClick={() => handleCollaborate(artist)}
                       disabled={!available}
-                      className={`w-full py-3 px-4 rounded-game font-semibold transition-all text-sm ${
+                      className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all text-sm ${
                         available
-                          ? 'game-button hover-glow'
-                          : 'bg-dark-surface/50 text-text-disabled cursor-not-allowed'
+                          ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white shadow-lg hover:shadow-xl'
+                          : 'bg-gray-600/50 text-gray-400 cursor-not-allowed'
                       }`}
                     >
                       {available ? 'Collaborate Now' : 'Requirements Not Met'}
@@ -330,17 +342,17 @@ export default function CollaborationsPage() {
         {/* My Collaborations */}
         {collaborations.length > 0 && (
           <div>
-            <h2 className="text-base font-bold text-text-primary mb-3">My Collaborations</h2>
+            <h2 className="text-base font-bold text-white mb-3">My Collaborations</h2>
             <div className="space-y-2">
               {collaborations.map((collab) => (
-                <div key={collab.id} className="game-card p-4 shadow-dark">
+                <div key={collab.id} className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 shadow-xl">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center space-x-3">
                       <div className="text-2xl">{collab.artistAvatar}</div>
                       <div>
-                        <h4 className="font-bold text-text-primary text-sm">{collab.title}</h4>
-                        <p className="text-xs text-text-muted">with {collab.artist}</p>
-                        <p className="text-xs text-text-muted">Created: {collab.createdAt}</p>
+                        <h4 className="font-bold text-white text-sm">{collab.title}</h4>
+                        <p className="text-xs text-gray-300">with {collab.artist}</p>
+                        <p className="text-xs text-gray-300">Created: {collab.createdAt}</p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -350,14 +362,15 @@ export default function CollaborationsPage() {
                             key={i}
                             icon={FiStar}
                             className={`text-xs ${
-                              i < collab.quality ? 'text-neon-orange' : 'text-text-disabled'
+                              i < collab.quality ? 'text-orange-400' : 'text-gray-500'
                             }`}
                           />
                         ))}
                       </div>
-                      <div className="text-xs text-text-muted">Quality: {collab.quality}/10</div>
+                      <div className="text-xs text-gray-300">Quality: {collab.quality}/10</div>
                     </div>
                   </div>
+
                   {!collab.released && (
                     <button
                       onClick={() => {
@@ -372,7 +385,7 @@ export default function CollaborationsPage() {
                           }
                         });
                       }}
-                      className="w-full game-button hover-glow text-sm"
+                      className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white py-3 px-4 rounded-2xl font-semibold hover:shadow-xl transition-all text-sm"
                     >
                       <SafeIcon icon={FiMusic} className="inline mr-2" />
                       Release Collaboration
