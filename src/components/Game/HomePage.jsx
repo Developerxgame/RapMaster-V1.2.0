@@ -68,16 +68,62 @@ export default function HomePage() {
   };
 
   const stats = [
-    { icon: FiStar, label: 'Fame', value: player.fame, color: 'text-neon-yellow', bgColor: 'bg-gradient-to-br from-neon-yellow/20 to-warning/20', borderColor: 'border-neon-yellow/30' },
-    { icon: FiTrendingUp, label: 'Reputation', value: player.reputation, color: 'text-neon-cyan', bgColor: 'bg-gradient-to-br from-neon-cyan/20 to-info/20', borderColor: 'border-neon-cyan/30' },
-    { icon: FiUsers, label: 'Fans', value: formatNumber(player.fans), color: 'text-neon-green', bgColor: 'bg-gradient-to-br from-neon-green/20 to-success/20', borderColor: 'border-neon-green/30' },
-    { icon: FiDollarSign, label: 'Net Worth', value: formatMoney(player.netWorth), color: 'text-neon-green', bgColor: 'bg-gradient-to-br from-neon-green/20 to-success/20', borderColor: 'border-neon-green/30' }
+    {
+      icon: FiStar,
+      label: 'Fame',
+      value: player.fame,
+      color: 'text-yellow-400',
+      bgColor: 'bg-gradient-to-br from-yellow-400/20 to-orange-400/20',
+      borderColor: 'border-yellow-400/30'
+    },
+    {
+      icon: FiTrendingUp,
+      label: 'Reputation',
+      value: player.reputation,
+      color: 'text-cyan-400',
+      bgColor: 'bg-gradient-to-br from-cyan-400/20 to-blue-400/20',
+      borderColor: 'border-cyan-400/30'
+    },
+    {
+      icon: FiUsers,
+      label: 'Fans',
+      value: formatNumber(player.fans),
+      color: 'text-green-400',
+      bgColor: 'bg-gradient-to-br from-green-400/20 to-emerald-400/20',
+      borderColor: 'border-green-400/30'
+    },
+    {
+      icon: FiDollarSign,
+      label: 'Net Worth',
+      value: formatMoney(player.netWorth),
+      color: 'text-green-400',
+      bgColor: 'bg-gradient-to-br from-green-400/20 to-emerald-400/20',
+      borderColor: 'border-green-400/30'
+    }
   ];
 
   const quickActions = [
-    { title: 'Find Work', description: 'Earn money and gain experience', icon: FiBriefcase, color: 'bg-gradient-to-r from-neon-cyan to-info', action: () => navigate('/game/job') },
-    { title: 'Create Music', description: 'Record your next hit track', icon: FiMusic, color: 'bg-gradient-to-r from-neon-purple to-neon-pink', action: () => navigate('/game/studio') },
-    { title: 'Social Media', description: 'Connect with your fans', icon: FiGlobe, color: 'bg-gradient-to-r from-neon-pink to-neon-red', action: () => navigate('/game/social') }
+    {
+      title: 'Find Work',
+      description: 'Earn money and gain experience',
+      icon: FiBriefcase,
+      color: 'bg-gradient-to-br from-cyan-400 to-blue-500',
+      action: () => navigate('/game/job')
+    },
+    {
+      title: 'Create Music',
+      description: 'Record your next hit track',
+      icon: FiMusic,
+      color: 'bg-gradient-to-br from-purple-400 to-pink-500',
+      action: () => navigate('/game/studio')
+    },
+    {
+      title: 'Social Media',
+      description: 'Connect with your fans',
+      icon: FiGlobe,
+      color: 'bg-gradient-to-br from-pink-400 to-red-500',
+      action: () => navigate('/game/social')
+    }
   ];
 
   const topReleases = releases
@@ -106,32 +152,33 @@ export default function HomePage() {
   const recentMilestones = checkMilestones();
 
   return (
-    <div className="min-h-screen bg-dark-bg pb-24 pt-16">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 pb-24 pt-16">
       <div className="px-4 space-y-4 max-w-mobile mx-auto">
         {/* Welcome Section */}
         <motion.div
-          className="game-card glow-border p-4 text-text-primary shadow-glow"
+          className="bg-white/10 backdrop-blur-md p-4 rounded-3xl border border-white/20 shadow-2xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h1 className="text-xl font-bold mb-2 neon-text">Welcome back, {player.stageName}!</h1>
-              <p className="text-text-secondary mb-3 text-sm">
+              <h1 className="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+                Welcome back, {player.stageName}!
+              </h1>
+              <p className="text-gray-300 mb-3 text-sm">
                 Age {player.age} • Week {player.week} of {player.year}
               </p>
             </div>
             <ShareButton onShare={handleShareCareer} size="small" />
           </div>
-          
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-2">
-              <SafeIcon icon={FiZap} className="text-neon-orange" />
-              <span className="font-medium text-text-primary">{player.energy}/100 Energy</span>
+              <SafeIcon icon={FiZap} className="text-orange-400" />
+              <span className="font-medium text-white">{player.energy}/100 Energy</span>
             </div>
             <div className="flex items-center space-x-2">
-              <SafeIcon icon={FiCalendar} className="text-neon-cyan" />
-              <span className="font-medium text-text-primary">{yearsLeft} years left</span>
+              <SafeIcon icon={FiCalendar} className="text-cyan-400" />
+              <span className="font-medium text-white">{yearsLeft} years left</span>
             </div>
           </div>
         </motion.div>
@@ -139,18 +186,18 @@ export default function HomePage() {
         {/* Recent Milestones */}
         {recentMilestones.length > 0 && (
           <motion.div
-            className="game-card bg-gradient-to-r from-neon-orange/20 to-warning/20 border-neon-orange/30 p-4 text-text-primary shadow-glow"
+            className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border border-orange-400/30 p-4 rounded-3xl shadow-2xl"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
           >
-            <h3 className="font-bold text-base mb-2">🎉 Recent Milestones</h3>
+            <h3 className="font-bold text-base mb-2 text-white">🎉 Recent Milestones</h3>
             <div className="space-y-2">
               {recentMilestones.map((milestone, index) => (
                 <div key={index} className="flex items-center justify-between">
-                  <span className="text-sm text-text-primary">{milestone}</span>
+                  <span className="text-sm text-white">{milestone}</span>
                   <button
                     onClick={() => handleShareMilestone(milestone)}
-                    className="text-xs bg-neon-orange/20 hover:bg-neon-orange/30 text-neon-orange px-2 py-1 rounded-game transition-colors"
+                    className="text-xs bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 px-2 py-1 rounded-xl transition-colors"
                   >
                     Share
                   </button>
@@ -165,27 +212,27 @@ export default function HomePage() {
           {stats.map((stat, index) => (
             <motion.div
               key={stat.label}
-              className={`stat-card ${stat.borderColor} p-3 shadow-dark`}
+              className={`${stat.bgColor} border ${stat.borderColor} p-3 rounded-2xl shadow-xl backdrop-blur-md`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
               <div className="flex items-center space-x-2 mb-2">
-                <div className="p-2 bg-dark-surface/30 rounded-game">
+                <div className="p-2 bg-black/20 rounded-xl">
                   <SafeIcon icon={stat.icon} className={`text-sm ${stat.color}`} />
                 </div>
-                <span className="text-xs font-medium text-text-secondary">{stat.label}</span>
+                <span className="text-xs font-medium text-gray-200">{stat.label}</span>
               </div>
-              <div className={`text-lg font-bold ${stat.color} animate-neon`}>{stat.value}</div>
+              <div className={`text-lg font-bold ${stat.color}`}>{stat.value}</div>
             </motion.div>
           ))}
         </div>
 
         {/* Performance Dashboard */}
-        <div className="game-card p-4 shadow-dark">
+        <div className="bg-white/10 backdrop-blur-md p-4 rounded-3xl border border-white/20 shadow-2xl">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base font-bold text-text-primary flex items-center space-x-2">
-              <SafeIcon icon={FiBarChart} className="text-neon-cyan" />
+            <h2 className="text-base font-bold text-white flex items-center space-x-2">
+              <SafeIcon icon={FiBarChart} className="text-cyan-400" />
               <span>Performance Dashboard</span>
             </h2>
             {totalViews > 100000 && (
@@ -203,58 +250,56 @@ export default function HomePage() {
               />
             )}
           </div>
-          
           <div className="grid grid-cols-2 gap-3 mb-3">
-            <div className="text-center p-2 bg-dark-surface/30 rounded-game">
-              <div className="text-lg font-bold text-neon-cyan animate-neon">{formatNumber(totalViews)}</div>
-              <div className="text-xs text-text-muted">Total Views</div>
+            <div className="text-center p-2 bg-black/20 rounded-2xl">
+              <div className="text-lg font-bold text-cyan-400">{formatNumber(totalViews)}</div>
+              <div className="text-xs text-gray-300">Total Views</div>
             </div>
-            <div className="text-center p-2 bg-dark-surface/30 rounded-game">
-              <div className="text-lg font-bold text-neon-green animate-neon">{formatNumber(thisWeekViews)}</div>
-              <div className="text-xs text-text-muted">This Week</div>
+            <div className="text-center p-2 bg-black/20 rounded-2xl">
+              <div className="text-lg font-bold text-green-400">{formatNumber(thisWeekViews)}</div>
+              <div className="text-xs text-gray-300">This Week</div>
             </div>
           </div>
-          
           <div className="grid grid-cols-3 gap-2 text-center">
-            <div className="p-2 bg-neon-red/10 border border-neon-red/30 rounded-game">
-              <div className="text-base font-bold text-neon-red animate-neon">{viralHits}</div>
-              <div className="text-xs text-text-muted">Viral</div>
+            <div className="p-2 bg-red-500/10 border border-red-400/30 rounded-2xl">
+              <div className="text-base font-bold text-red-400">{viralHits}</div>
+              <div className="text-xs text-gray-300">Viral</div>
             </div>
-            <div className="p-2 bg-neon-orange/10 border border-neon-orange/30 rounded-game">
-              <div className="text-base font-bold text-neon-orange animate-neon">{trendingReleases}</div>
-              <div className="text-xs text-text-muted">Trending</div>
+            <div className="p-2 bg-orange-500/10 border border-orange-400/30 rounded-2xl">
+              <div className="text-base font-bold text-orange-400">{trendingReleases}</div>
+              <div className="text-xs text-gray-300">Trending</div>
             </div>
-            <div className="p-2 bg-neon-purple/10 border border-neon-purple/30 rounded-game">
-              <div className="text-base font-bold text-neon-purple animate-neon">{chartHits}</div>
-              <div className="text-xs text-text-muted">Chart Hits</div>
+            <div className="p-2 bg-purple-500/10 border border-purple-400/30 rounded-2xl">
+              <div className="text-base font-bold text-purple-400">{chartHits}</div>
+              <div className="text-xs text-gray-300">Chart Hits</div>
             </div>
           </div>
         </div>
 
         {/* Social Media Growth */}
-        <div className="game-card p-4 shadow-dark">
-          <h2 className="text-base font-bold text-text-primary mb-3">Social Media Growth</h2>
-          <div className="grid grid-cols-2 gap-3 text-center">
-            <div>
-              <div className="text-lg font-bold text-neon-pink animate-neon">{formatNumber(player.socialMedia.rapgram.followers)}</div>
-              <div className="text-xs text-text-muted">RapGram</div>
+        <div className="bg-white/10 backdrop-blur-md p-4 rounded-3xl border border-white/20 shadow-2xl">
+          <h2 className="text-base font-bold text-white mb-3">Social Media Following</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="text-center">
+              <div className="text-lg font-bold text-pink-400">{formatNumber(player.socialMedia.rapgram.followers)}</div>
+              <div className="text-xs text-gray-300">RapGram</div>
             </div>
-            <div>
-              <div className="text-lg font-bold text-neon-red animate-neon">{formatNumber(player.socialMedia.raptube.subscribers)}</div>
-              <div className="text-xs text-text-muted">RapTube</div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-red-400">{formatNumber(player.socialMedia.raptube.subscribers)}</div>
+              <div className="text-xs text-gray-300">RapTube</div>
             </div>
-            <div>
-              <div className="text-lg font-bold text-neon-green animate-neon">{formatNumber(player.socialMedia.rapify.listeners)}</div>
-              <div className="text-xs text-text-muted">Rapify</div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-green-400">{formatNumber(player.socialMedia.rapify.listeners)}</div>
+              <div className="text-xs text-gray-300">Rapify</div>
             </div>
-            <div>
-              <div className="text-lg font-bold text-neon-purple animate-neon">{formatNumber(player.socialMedia.riktok.followers)}</div>
-              <div className="text-xs text-text-muted">RikTok</div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-purple-400">{formatNumber(player.socialMedia.riktok.followers)}</div>
+              <div className="text-xs text-gray-300">RikTok</div>
             </div>
           </div>
-          <div className="mt-3 p-2 bg-dark-surface/30 rounded-game text-center">
-            <div className="text-sm text-text-secondary">
-              Auto-growth based on <span className="font-medium text-neon-cyan">{formatNumber(player.fans)} fans</span>
+          <div className="mt-3 p-2 bg-black/20 rounded-2xl text-center">
+            <div className="text-sm text-gray-200">
+              Auto-growth based on <span className="font-medium text-cyan-400">{formatNumber(player.fans)} fans</span>
             </div>
           </div>
         </div>
@@ -262,78 +307,71 @@ export default function HomePage() {
         {/* Weekly Earnings */}
         {earnings.thisWeek > 0 && (
           <motion.div
-            className="game-card bg-gradient-to-r from-neon-green/20 to-success/20 border-neon-green/30 p-4 text-text-primary shadow-glow"
+            className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-400/30 p-4 rounded-3xl shadow-2xl"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
           >
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-base">Weekly Earnings</h3>
-                <p className="text-text-secondary text-sm">From your releases</p>
+                <h3 className="font-bold text-base text-white">Weekly Earnings</h3>
+                <p className="text-gray-200 text-sm">From your releases</p>
               </div>
               <div className="text-right">
-                <div className="text-xl font-bold text-neon-green animate-neon">${Math.floor(earnings.thisWeek)}</div>
-                <div className="text-xs text-text-muted">This week</div>
+                <div className="text-xl font-bold text-green-400">${Math.floor(earnings.thisWeek)}</div>
+                <div className="text-xs text-gray-300">This week</div>
               </div>
             </div>
           </motion.div>
         )}
 
-        {/* Quick Actions */}
+        {/* Quick Actions - Icon Only */}
         <div>
-          <h2 className="text-base font-bold text-text-primary mb-3">Quick Actions</h2>
-          <div className="space-y-3">
+          <h2 className="text-base font-bold text-white mb-3">Quick Actions</h2>
+          <div className="flex justify-center space-x-4">
             {quickActions.map((action, index) => (
               <motion.button
                 key={action.title}
                 onClick={action.action}
-                className="w-full game-card p-3 hover:bg-dark-surface/80 transition-all active:scale-98 hover-glow"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+                className="p-4 rounded-2xl shadow-xl transition-all active:scale-95 hover:scale-105"
+                style={{ background: action.color }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <div className="flex items-center space-x-3">
-                  <div className={`p-2 ${action.color} rounded-game shadow-glow`}>
-                    <SafeIcon icon={action.icon} className="text-lg text-white" />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <div className="font-semibold text-text-primary text-sm">{action.title}</div>
-                    <div className="text-xs text-text-muted">{action.description}</div>
-                  </div>
-                </div>
+                <SafeIcon icon={action.icon} className="text-2xl text-white" />
               </motion.button>
             ))}
           </div>
         </div>
 
         {/* Career Summary */}
-        <div className="game-card p-4 shadow-dark">
-          <h2 className="text-base font-bold text-text-primary mb-3">Career Summary</h2>
+        <div className="bg-white/10 backdrop-blur-md p-4 rounded-3xl border border-white/20 shadow-2xl">
+          <h2 className="text-base font-bold text-white mb-3">Career Summary</h2>
           <div className="grid grid-cols-3 gap-3 text-center mb-3">
             <div>
-              <div className="text-xl font-bold text-neon-cyan animate-neon">{tracks.length}</div>
-              <div className="text-xs text-text-muted">Tracks</div>
+              <div className="text-xl font-bold text-cyan-400">{tracks.length}</div>
+              <div className="text-xs text-gray-300">Tracks</div>
             </div>
             <div>
-              <div className="text-xl font-bold text-neon-purple animate-neon">{albums.length}</div>
-              <div className="text-xs text-text-muted">Albums</div>
+              <div className="text-xl font-bold text-purple-400">{albums.length}</div>
+              <div className="text-xs text-gray-300">Albums</div>
             </div>
             <div>
-              <div className="text-xl font-bold text-neon-pink animate-neon">{musicVideos.length}</div>
-              <div className="text-xs text-text-muted">Videos</div>
+              <div className="text-xl font-bold text-pink-400">{musicVideos.length}</div>
+              <div className="text-xs text-gray-300">Videos</div>
             </div>
           </div>
           {releases.length > 0 && (
-            <div className="grid grid-cols-2 gap-3 text-center pt-3 border-t border-dark-border/30">
+            <div className="grid grid-cols-2 gap-3 text-center pt-3 border-t border-white/10">
               <div>
-                <div className="text-lg font-bold text-neon-green animate-neon">{formatNumber(totalViews)}</div>
-                <div className="text-xs text-text-muted">Total Views</div>
+                <div className="text-lg font-bold text-green-400">{formatNumber(totalViews)}</div>
+                <div className="text-xs text-gray-300">Total Views</div>
               </div>
               <div>
-                <div className="text-lg font-bold text-neon-orange animate-neon">${Math.floor(earnings.total)}</div>
-                <div className="text-xs text-text-muted">Total Earnings</div>
+                <div className="text-lg font-bold text-orange-400">${Math.floor(earnings.total)}</div>
+                <div className="text-xs text-gray-300">Total Earnings</div>
               </div>
             </div>
           )}
@@ -341,47 +379,49 @@ export default function HomePage() {
 
         {/* Top Releases */}
         {topReleases.length > 0 && (
-          <div className="game-card p-4 shadow-dark">
-            <h2 className="text-base font-bold text-text-primary mb-3">Top Performing Releases</h2>
+          <div className="bg-white/10 backdrop-blur-md p-4 rounded-3xl border border-white/20 shadow-2xl">
+            <h2 className="text-base font-bold text-white mb-3">Top Performing Releases</h2>
             <div className="space-y-2">
               {topReleases.map((release, index) => (
                 <motion.div
                   key={release.id}
-                  className="flex items-center justify-between p-2 bg-dark-surface/30 rounded-game"
+                  className="flex items-center justify-between p-2 bg-black/20 rounded-2xl"
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
                   <div className="flex items-center space-x-2">
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-xs ${
-                      index === 0 ? 'bg-gradient-to-r from-neon-yellow to-warning shadow-glow' :
-                      index === 1 ? 'bg-gradient-to-r from-text-muted to-text-disabled' :
-                      'bg-gradient-to-r from-neon-orange to-warning'
+                      index === 0 ? 'bg-gradient-to-r from-yellow-400 to-orange-400' :
+                      index === 1 ? 'bg-gradient-to-r from-gray-400 to-gray-500' :
+                      'bg-gradient-to-r from-orange-400 to-red-400'
                     }`}>
                       {index + 1}
                     </div>
                     <div>
-                      <div className="font-semibold text-text-primary text-sm flex items-center space-x-1">
+                      <div className="font-semibold text-white text-sm flex items-center space-x-1">
                         <span className="truncate max-w-24">{release.title}</span>
                         {release.isViral && <span className="text-xs">🔥</span>}
                         {release.trending && <span className="text-xs">📈</span>}
                         {release.chartPosition && release.chartPosition <= 10 && (
-                          <span className="text-xs bg-neon-yellow/20 text-neon-yellow px-1 rounded">#{release.chartPosition}</span>
+                          <span className="text-xs bg-yellow-400/20 text-yellow-400 px-1 rounded">
+                            #{release.chartPosition}
+                          </span>
                         )}
                       </div>
-                      <div className="text-xs text-text-muted">
+                      <div className="text-xs text-gray-300">
                         {release.type === 'video' ? 'RapTube Video' : 'Rapify ' + release.type}
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="flex items-center space-x-1 text-neon-cyan">
+                    <div className="flex items-center space-x-1 text-cyan-400">
                       <SafeIcon icon={FiEye} className="text-xs" />
-                      <span className="font-bold text-xs animate-neon">{formatNumber(release.views)}</span>
+                      <span className="font-bold text-xs">{formatNumber(release.views)}</span>
                     </div>
-                    <div className="text-xs text-neon-green">${Math.floor(release.earnings)}</div>
+                    <div className="text-xs text-green-400">${Math.floor(release.earnings)}</div>
                     {release.weeklyViews && (
-                      <div className="text-xs text-neon-purple">+{formatNumber(release.weeklyViews)} this week</div>
+                      <div className="text-xs text-purple-400">+{formatNumber(release.weeklyViews)} this week</div>
                     )}
                     {release.isViral && (
                       <button
@@ -393,7 +433,7 @@ export default function HomePage() {
                             stats: { fame: player.fame, fans: player.fans, netWorth: player.netWorth }
                           }
                         })}
-                        className="text-xs bg-neon-red/20 text-neon-red px-1 py-0.5 rounded mt-1 hover:bg-neon-red/30 transition-colors"
+                        className="text-xs bg-red-400/20 text-red-400 px-1 py-0.5 rounded mt-1 hover:bg-red-400/30 transition-colors"
                       >
                         Share Viral Hit
                       </button>
@@ -408,7 +448,7 @@ export default function HomePage() {
         {/* Next Week Button */}
         <motion.button
           onClick={() => dispatch({ type: 'ADVANCE_WEEK' })}
-          className="w-full game-button hover-glow animate-glow"
+          className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white py-4 px-6 rounded-3xl font-bold shadow-xl hover:shadow-2xl transition-all"
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
         >

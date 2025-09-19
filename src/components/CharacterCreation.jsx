@@ -22,21 +22,21 @@ export default function CharacterCreation() {
   const targetSlot = location.state?.slot;
 
   const avatars = [
-    { id: 1, name: 'Street Style', emoji: '🎤' },
-    { id: 2, name: 'Classic Rapper', emoji: '👨‍🎤' },
-    { id: 3, name: 'Modern Artist', emoji: '🕺' },
-    { id: 4, name: 'Underground', emoji: '🎭' },
-    { id: 5, name: 'Luxury Rap', emoji: '💎' },
-    { id: 6, name: 'Female MC', emoji: '👩‍🎤' },
-    { id: 7, name: 'Rising Star', emoji: '⭐' },
-    { id: 8, name: 'Veteran', emoji: '🎯' }
+    { id: 1, name: 'Street Style', emoji: '👨‍🎤', gender: 'male' },
+    { id: 2, name: 'Classic Rapper', emoji: '🕺', gender: 'male' },
+    { id: 3, name: 'Modern Artist', emoji: '👨‍🎨', gender: 'male' },
+    { id: 4, name: 'Underground', emoji: '🎭', gender: 'male' },
+    { id: 5, name: 'Female MC', emoji: '👩‍🎤', gender: 'female' },
+    { id: 6, name: 'Rising Star', emoji: '💃', gender: 'female' },
+    { id: 7, name: 'Luxury Rap', emoji: '💎', gender: 'unisex' },
+    { id: 8, name: 'Veteran', emoji: '🎯', gender: 'unisex' }
   ];
 
   const cities = [
-    { name: 'Los Angeles', boost: 'Fame Boost', flag: '🌴', color: 'bg-neon-orange' },
-    { name: 'New York', boost: 'Reputation Boost', flag: '🗽', color: 'bg-neon-cyan' },
-    { name: 'Atlanta', boost: 'Fan Growth', flag: '🍑', color: 'bg-neon-green' },
-    { name: 'Chicago', boost: 'Business Boost', flag: '🏙️', color: 'bg-neon-purple' }
+    { name: 'Los Angeles', boost: 'Fame Boost', flag: '🌴', color: 'bg-gradient-to-br from-orange-400 to-red-500' },
+    { name: 'New York', boost: 'Reputation Boost', flag: '🗽', color: 'bg-gradient-to-br from-cyan-400 to-blue-500' },
+    { name: 'Atlanta', boost: 'Fan Growth', flag: '🍑', color: 'bg-gradient-to-br from-green-400 to-emerald-500' },
+    { name: 'Chicago', boost: 'Business Boost', flag: '🏙️', color: 'bg-gradient-to-br from-purple-400 to-pink-500' }
   ];
 
   const randomNames = [
@@ -60,7 +60,7 @@ export default function CharacterCreation() {
   const findAvailableSlot = () => {
     // If we have a target slot, use it
     if (targetSlot) return targetSlot;
-    
+
     // Otherwise find first available slot
     for (let i = 1; i <= 3; i++) {
       const save = localStorage.getItem(`rapCareer_slot_${i}`);
@@ -109,6 +109,7 @@ export default function CharacterCreation() {
       tracks: [],
       albums: [],
       musicVideos: [],
+      concerts: [],
       socialPosts: [],
       releases: [],
       earnings: {
@@ -136,24 +137,24 @@ export default function CharacterCreation() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-bg">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
       {/* Header */}
-      <div className="game-card px-6 py-4 shadow-dark border-0 border-b border-dark-border/30 rounded-none">
+      <div className="bg-white/10 backdrop-blur-md px-6 py-4 border-b border-white/10">
         <div className="flex items-center justify-between pt-8">
           <button
             onClick={() => step > 1 ? setStep(step - 1) : navigate('/menu')}
-            className="p-2 hover:bg-dark-surface/50 rounded-game transition-colors"
+            className="p-2 hover:bg-white/10 rounded-2xl transition-colors"
           >
-            <SafeIcon icon={FiChevronLeft} className="text-xl text-neon-cyan" />
+            <SafeIcon icon={FiChevronLeft} className="text-xl text-cyan-400" />
           </button>
           <div className="flex-1 text-center">
-            <h1 className="text-lg font-semibold text-text-primary">Create Artist</h1>
+            <h1 className="text-lg font-semibold text-white">Create Artist</h1>
             <div className="flex justify-center space-x-2 mt-2">
               {[1, 2, 3].map((num) => (
                 <div
                   key={num}
                   className={`w-2 h-2 rounded-full transition-colors ${
-                    step >= num ? 'bg-neon-cyan shadow-neon' : 'bg-text-disabled'
+                    step >= num ? 'bg-cyan-400 shadow-lg' : 'bg-gray-600'
                   }`}
                 />
               ))}
@@ -173,30 +174,30 @@ export default function CharacterCreation() {
             exit={{ opacity: 0, x: -30 }}
           >
             <div className="text-center">
-              <SafeIcon icon={FiUser} className="text-4xl text-neon-cyan mx-auto mb-4 animate-glow" />
-              <h2 className="text-2xl font-bold text-text-primary mb-2 neon-text">Choose Your Avatar</h2>
-              <p className="text-text-muted">Pick your rap style</p>
+              <SafeIcon icon={FiUser} className="text-4xl text-cyan-400 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-white mb-2">Choose Your Avatar</h2>
+              <p className="text-gray-300">Pick your rap style</p>
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               {avatars.map((avatar) => (
                 <motion.button
                   key={avatar.id}
                   onClick={() => setCharacter({ ...character, avatar: avatar.id })}
-                  className={`p-6 rounded-game-lg transition-all ${
+                  className={`p-6 rounded-3xl transition-all ${
                     character.avatar === avatar.id
-                      ? 'bg-neon-cyan/20 shadow-glow border-2 border-neon-cyan/50'
-                      : 'game-card hover:shadow-glow'
+                      ? 'bg-gradient-to-br from-cyan-400/20 to-purple-500/20 border-2 border-cyan-400/50 shadow-xl'
+                      : 'bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20'
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <div className="text-4xl mb-3">{avatar.emoji}</div>
                   <div className={`text-sm font-medium ${
-                    character.avatar === avatar.id ? 'text-neon-cyan animate-neon' : 'text-text-primary'
+                    character.avatar === avatar.id ? 'text-cyan-400' : 'text-white'
                   }`}>
                     {avatar.name}
                   </div>
+                  <div className="text-xs text-gray-400 capitalize mt-1">{avatar.gender}</div>
                 </motion.button>
               ))}
             </div>
@@ -213,28 +214,26 @@ export default function CharacterCreation() {
           >
             <div className="text-center">
               <div className="text-4xl mb-4">🎤</div>
-              <h2 className="text-2xl font-bold text-text-primary mb-2 neon-text">Stage Name</h2>
-              <p className="text-text-muted">How will fans know you?</p>
+              <h2 className="text-2xl font-bold text-white mb-2">Stage Name</h2>
+              <p className="text-gray-300">How will fans know you?</p>
             </div>
-
             <div className="space-y-4">
-              <div className="game-card p-4">
+              <div className="bg-white/10 backdrop-blur-md p-4 rounded-3xl border border-white/20">
                 <input
                   type="text"
                   value={character.stageName}
                   onChange={(e) => setCharacter({ ...character, stageName: e.target.value })}
                   placeholder="Enter your stage name"
-                  className="w-full text-lg font-medium text-text-primary placeholder-text-muted bg-transparent border-none outline-none"
+                  className="w-full text-lg font-medium text-white placeholder-gray-400 bg-transparent border-none outline-none"
                   maxLength={20}
                 />
               </div>
-
               <button
                 onClick={generateRandomName}
-                className="w-full flex items-center justify-center space-x-2 p-4 bg-dark-surface/60 rounded-game-lg hover:bg-dark-surface/80 transition-colors"
+                className="w-full flex items-center justify-center space-x-2 p-4 bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 hover:bg-white/20 transition-colors"
               >
-                <SafeIcon icon={FiShuffle} className="text-lg text-text-muted" />
-                <span className="font-medium text-text-muted">Generate Random Name</span>
+                <SafeIcon icon={FiShuffle} className="text-lg text-gray-300" />
+                <span className="font-medium text-gray-300">Generate Random Name</span>
               </button>
             </div>
           </motion.div>
@@ -249,43 +248,42 @@ export default function CharacterCreation() {
             exit={{ opacity: 0, x: -30 }}
           >
             <div className="text-center">
-              <SafeIcon icon={FiMapPin} className="text-4xl text-neon-cyan mx-auto mb-4 animate-glow" />
-              <h2 className="text-2xl font-bold text-text-primary mb-2 neon-text">Choose Your City</h2>
-              <p className="text-text-muted">Each city provides unique benefits</p>
+              <SafeIcon icon={FiMapPin} className="text-4xl text-cyan-400 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-white mb-2">Choose Your City</h2>
+              <p className="text-gray-300">Each city provides unique benefits</p>
             </div>
-
             <div className="space-y-3">
               {cities.map((city) => (
                 <motion.button
                   key={city.name}
                   onClick={() => setCharacter({ ...character, city: city.name })}
-                  className={`w-full flex items-center justify-between p-4 rounded-game-lg transition-all ${
+                  className={`w-full flex items-center justify-between p-4 rounded-3xl transition-all ${
                     character.city === city.name
-                      ? 'bg-neon-cyan/20 shadow-glow border border-neon-cyan/50'
-                      : 'game-card hover:shadow-glow'
+                      ? 'bg-gradient-to-br from-cyan-400/20 to-purple-500/20 border-2 border-cyan-400/50 shadow-xl'
+                      : 'bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20'
                   }`}
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                 >
                   <div className="flex items-center space-x-4">
-                    <div className={`w-12 h-12 ${city.color} rounded-game flex items-center justify-center text-xl shadow-glow`}>
+                    <div className={`w-12 h-12 ${city.color} rounded-2xl flex items-center justify-center text-xl shadow-lg`}>
                       {city.flag}
                     </div>
                     <div className="text-left">
                       <div className={`font-semibold ${
-                        character.city === city.name ? 'text-neon-cyan animate-neon' : 'text-text-primary'
+                        character.city === city.name ? 'text-cyan-400' : 'text-white'
                       }`}>
                         {city.name}
                       </div>
                       <div className={`text-sm ${
-                        character.city === city.name ? 'text-neon-cyan/80' : 'text-text-muted'
+                        character.city === city.name ? 'text-cyan-300' : 'text-gray-300'
                       }`}>
                         {city.boost}
                       </div>
                     </div>
                   </div>
                   {character.city === city.name && (
-                    <div className="w-6 h-6 bg-neon-cyan rounded-full flex items-center justify-center shadow-neon">
+                    <div className="w-6 h-6 bg-cyan-400 rounded-full flex items-center justify-center shadow-lg">
                       <div className="w-3 h-3 bg-white rounded-full"></div>
                     </div>
                   )}
@@ -294,28 +292,28 @@ export default function CharacterCreation() {
             </div>
 
             {/* Character Preview */}
-            <div className="game-card p-4">
-              <h3 className="font-semibold text-text-primary mb-3">Preview</h3>
+            <div className="bg-white/10 backdrop-blur-md p-4 rounded-3xl border border-white/20">
+              <h3 className="font-semibold text-white mb-3">Preview</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-text-muted">Avatar:</span>
-                  <span className="font-medium text-text-primary">
+                  <span className="text-gray-300">Avatar:</span>
+                  <span className="font-medium text-white">
                     {avatars.find(a => a.id === character.avatar)?.name}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-text-muted">Stage Name:</span>
-                  <span className="font-medium text-neon-cyan animate-neon">
+                  <span className="text-gray-300">Stage Name:</span>
+                  <span className="font-medium text-cyan-400">
                     {character.stageName || 'Not set'}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-text-muted">City:</span>
-                  <span className="font-medium text-text-primary">{character.city}</span>
+                  <span className="text-gray-300">City:</span>
+                  <span className="font-medium text-white">{character.city}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-text-muted">Starting Age:</span>
-                  <span className="font-medium text-text-primary">20 years</span>
+                  <span className="text-gray-300">Starting Age:</span>
+                  <span className="font-medium text-white">20 years</span>
                 </div>
               </div>
             </div>
@@ -327,10 +325,10 @@ export default function CharacterCreation() {
           <button
             onClick={handleNext}
             disabled={step === 2 && !character.stageName.trim()}
-            className={`w-full flex items-center justify-center space-x-2 py-4 px-6 rounded-game-lg font-semibold text-white transition-all ${
+            className={`w-full flex items-center justify-center space-x-2 py-4 px-6 rounded-3xl font-semibold text-white transition-all ${
               (step === 2 && !character.stageName.trim())
-                ? 'bg-text-disabled cursor-not-allowed'
-                : 'game-button hover-glow'
+                ? 'bg-gray-600 cursor-not-allowed'
+                : 'bg-gradient-to-r from-cyan-500 to-purple-500 shadow-xl hover:shadow-2xl'
             }`}
           >
             <span>{step === 3 ? 'Start Career' : 'Continue'}</span>
