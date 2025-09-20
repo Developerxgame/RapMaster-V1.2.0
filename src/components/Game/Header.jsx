@@ -4,7 +4,7 @@ import { useGame } from '../../context/GameContext';
 import SafeIcon from '../../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 
-const { FiSettings, FiDollarSign, FiZap, FiPlus } = FiIcons;
+const { FiSettings, FiDollarSign, FiZap, FiPlus, FiBookOpen } = FiIcons;
 
 export default function Header() {
   const navigate = useNavigate();
@@ -53,8 +53,8 @@ export default function Header() {
           </div>
           <div className="w-16 h-2 progress-bar">
             <div 
-              className="progress-fill"
-              style={{ width: `${getWeekProgress()}%` }}
+              className="progress-fill" 
+              style={{ width: `${getWeekProgress()}%` }} 
             />
           </div>
         </div>
@@ -78,6 +78,15 @@ export default function Header() {
               <SafeIcon icon={FiPlus} className="text-xs text-neon-orange/70" />
             </button>
           </div>
+
+          {/* Get Started Button */}
+          <button
+            onClick={() => navigate('/game/get-started')}
+            className="p-2 hover:bg-neon-cyan/20 rounded-game transition-colors"
+            title="Get Started Guide"
+          >
+            <SafeIcon icon={FiBookOpen} className="text-neon-cyan text-lg hover:text-neon-cyan" />
+          </button>
 
           <button
             onClick={() => navigate('/settings')}

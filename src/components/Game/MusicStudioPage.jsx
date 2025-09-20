@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import SafeIcon from '../../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 
-const { FiMusic, FiDisc, FiVideo, FiZap, FiStar, FiPlay, FiPlus, FiUpload, FiTrendingUp, FiDollarSign, FiMegaphone, FiRefreshCw, FiEdit3 } = FiIcons;
+const { FiMusic, FiDisc, FiVideo, FiZap, FiStar, FiPlay, FiPlus, FiUpload, FiTrendingUp, FiDollarSign, FiMegaphone, FiRefreshCw, FiEdit3, FiCheck } = FiIcons;
 
 export default function MusicStudioPage() {
   const { state, dispatch } = useGame();
@@ -12,6 +12,7 @@ export default function MusicStudioPage() {
   const [activeTab, setActiveTab] = useState('create');
   const [isReleasing, setIsReleasing] = useState(false);
   const [releasingContentId, setReleasingContentId] = useState(null);
+  const [releasedContent, setReleasedContent] = useState(new Set()); // Track what's been released
 
   // Track creation states
   const [trackTitle, setTrackTitle] = useState('');
@@ -39,289 +40,78 @@ export default function MusicStudioPage() {
 
   // Lyrics options - Artist name first, then others
   const lyricsOptions = [
-    {
-      id: 1,
-      name: `${player.stageName || 'You'}`,
-      price: 0,
-      quality: 3,
-      description: 'Write your own lyrics'
-    },
-    {
-      id: 2,
-      name: 'Local Songwriter',
-      price: 1000,
-      quality: 5,
-      description: 'Professional songwriter'
-    },
-    {
-      id: 3,
-      name: 'Hit Songwriter',
-      price: 5000,
-      quality: 7,
-      description: 'Chart-topping writer'
-    },
-    {
-      id: 4,
-      name: 'Grammy Winner',
-      price: 25000,
-      quality: 9,
-      description: 'Award-winning lyricist'
-    },
-    {
-      id: 5,
-      name: 'Legend Writer',
-      price: 100000,
-      quality: 10,
-      description: 'Legendary songwriter'
-    }
+    { id: 1, name: `${player.stageName || 'You'}`, price: 0, quality: 3, description: 'Write your own lyrics' },
+    { id: 2, name: 'Local Songwriter', price: 1000, quality: 5, description: 'Professional songwriter' },
+    { id: 3, name: 'Hit Songwriter', price: 5000, quality: 7, description: 'Chart-topping writer' },
+    { id: 4, name: 'Grammy Winner', price: 25000, quality: 9, description: 'Award-winning lyricist' },
+    { id: 5, name: 'Legend Writer', price: 100000, quality: 10, description: 'Legendary songwriter' }
   ];
 
   // Producers - Artist name first, then others
   const producers = [
-    {
-      id: 1,
-      name: `${player.stageName || 'You'}`,
-      price: 0,
-      quality: 3,
-      description: 'Produce your own beats'
-    },
-    {
-      id: 2,
-      name: 'Local Producer',
-      price: 5000,
-      quality: 5,
-      description: 'Professional local talent'
-    },
-    {
-      id: 3,
-      name: 'Known Producer',
-      price: 25000,
-      quality: 7,
-      description: 'Industry recognized'
-    },
-    {
-      id: 4,
-      name: 'Top Producer',
-      price: 100000,
-      quality: 9,
-      description: 'Chart-topping beats'
-    },
-    {
-      id: 5,
-      name: 'Superstar Producer',
-      price: 500000,
-      quality: 10,
-      description: 'Elite producer'
-    }
+    { id: 1, name: `${player.stageName || 'You'}`, price: 0, quality: 3, description: 'Produce your own beats' },
+    { id: 2, name: 'Local Producer', price: 5000, quality: 5, description: 'Professional local talent' },
+    { id: 3, name: 'Known Producer', price: 25000, quality: 7, description: 'Industry recognized' },
+    { id: 4, name: 'Top Producer', price: 100000, quality: 9, description: 'Chart-topping beats' },
+    { id: 5, name: 'Superstar Producer', price: 500000, quality: 10, description: 'Elite producer' }
   ];
 
   // Directors - Artist name first, then others
   const directors = [
-    {
-      id: 1,
-      name: `${player.stageName || 'You'}`,
-      price: 0,
-      quality: 3,
-      description: 'Direct yourself'
-    },
-    {
-      id: 2,
-      name: 'Music Director',
-      price: 10000,
-      quality: 5,
-      description: 'Professional direction'
-    },
-    {
-      id: 3,
-      name: 'Creative Director',
-      price: 50000,
-      quality: 7,
-      description: 'Creative vision'
-    },
-    {
-      id: 4,
-      name: 'Award Director',
-      price: 200000,
-      quality: 9,
-      description: 'Award-winning direction'
-    },
-    {
-      id: 5,
-      name: 'Visionary Director',
-      price: 1000000,
-      quality: 10,
-      description: 'Legendary vision'
-    }
+    { id: 1, name: `${player.stageName || 'You'}`, price: 0, quality: 3, description: 'Direct yourself' },
+    { id: 2, name: 'Music Director', price: 10000, quality: 5, description: 'Professional direction' },
+    { id: 3, name: 'Creative Director', price: 50000, quality: 7, description: 'Creative vision' },
+    { id: 4, name: 'Award Director', price: 200000, quality: 9, description: 'Award-winning direction' },
+    { id: 5, name: 'Visionary Director', price: 1000000, quality: 10, description: 'Legendary vision' }
   ];
 
   // Studios - Artist name first, then others
   const studios = [
-    {
-      id: 1,
-      name: 'Home Studio',
-      price: 0,
-      quality: 3,
-      description: 'Your own setup'
-    },
-    {
-      id: 2,
-      name: 'Local Studio',
-      price: 10000,
-      quality: 5,
-      description: 'Professional studio'
-    },
-    {
-      id: 3,
-      name: 'Premium Studio',
-      price: 50000,
-      quality: 7,
-      description: 'High-end equipment'
-    },
-    {
-      id: 4,
-      name: 'Elite Studio',
-      price: 200000,
-      quality: 9,
-      description: 'Industry standard'
-    },
-    {
-      id: 5,
-      name: 'Legendary Studio',
-      price: 1000000,
-      quality: 10,
-      description: 'Iconic recording space'
-    }
+    { id: 1, name: 'Home Studio', price: 0, quality: 3, description: 'Your own setup' },
+    { id: 2, name: 'Local Studio', price: 10000, quality: 5, description: 'Professional studio' },
+    { id: 3, name: 'Premium Studio', price: 50000, quality: 7, description: 'High-end equipment' },
+    { id: 4, name: 'Elite Studio', price: 200000, quality: 9, description: 'Industry standard' },
+    { id: 5, name: 'Legendary Studio', price: 1000000, quality: 10, description: 'Iconic recording space' }
   ];
 
   // Video-specific options - Artist name first, then others
   const videoProducers = [
-    {
-      id: 1,
-      name: `${player.stageName || 'You'}`,
-      price: 0,
-      quality: 3,
-      description: 'Self-produced video'
-    },
-    {
-      id: 2,
-      name: 'Video Producer',
-      price: 25000,
-      quality: 5,
-      description: 'Professional video'
-    },
-    {
-      id: 3,
-      name: 'Commercial Producer',
-      price: 100000,
-      quality: 7,
-      description: 'Commercial quality'
-    },
-    {
-      id: 4,
-      name: 'Music Video Pro',
-      price: 500000,
-      quality: 9,
-      description: 'Top-tier video production'
-    },
-    {
-      id: 5,
-      name: 'Hollywood Producer',
-      price: 2000000,
-      quality: 10,
-      description: 'Cinematic quality'
-    }
+    { id: 1, name: `${player.stageName || 'You'}`, price: 0, quality: 3, description: 'Self-produced video' },
+    { id: 2, name: 'Video Producer', price: 25000, quality: 5, description: 'Professional video' },
+    { id: 3, name: 'Commercial Producer', price: 100000, quality: 7, description: 'Commercial quality' },
+    { id: 4, name: 'Music Video Pro', price: 500000, quality: 9, description: 'Top-tier video production' },
+    { id: 5, name: 'Hollywood Producer', price: 2000000, quality: 10, description: 'Cinematic quality' }
   ];
 
   const videoDirectors = [
-    {
-      id: 1,
-      name: `${player.stageName || 'You'}`,
-      price: 0,
-      quality: 3,
-      description: 'Self-directed video'
-    },
-    {
-      id: 2,
-      name: 'Video Director',
-      price: 25000,
-      quality: 5,
-      description: 'Professional direction'
-    },
-    {
-      id: 3,
-      name: 'Creative Director',
-      price: 100000,
-      quality: 7,
-      description: 'Artistic vision'
-    },
-    {
-      id: 4,
-      name: 'Award Director',
-      price: 500000,
-      quality: 9,
-      description: 'Award-winning videos'
-    },
-    {
-      id: 5,
-      name: 'Visionary Director',
-      price: 2000000,
-      quality: 10,
-      description: 'Legendary filmmaker'
-    }
+    { id: 1, name: `${player.stageName || 'You'}`, price: 0, quality: 3, description: 'Self-directed video' },
+    { id: 2, name: 'Video Director', price: 25000, quality: 5, description: 'Professional direction' },
+    { id: 3, name: 'Creative Director', price: 100000, quality: 7, description: 'Artistic vision' },
+    { id: 4, name: 'Award Director', price: 500000, quality: 9, description: 'Award-winning videos' },
+    { id: 5, name: 'Visionary Director', price: 2000000, quality: 10, description: 'Legendary filmmaker' }
   ];
 
   const videoStudios = [
-    {
-      id: 1,
-      name: 'Home Location',
-      price: 0,
-      quality: 3,
-      description: 'Film at home'
-    },
-    {
-      id: 2,
-      name: 'Video Studio',
-      price: 25000,
-      quality: 5,
-      description: 'Professional video studio'
-    },
-    {
-      id: 3,
-      name: 'Production Studio',
-      price: 100000,
-      quality: 7,
-      description: 'Full production facility'
-    },
-    {
-      id: 4,
-      name: 'Sound Stage',
-      price: 500000,
-      quality: 9,
-      description: 'Hollywood sound stage'
-    },
-    {
-      id: 5,
-      name: 'Epic Location',
-      price: 2000000,
-      quality: 10,
-      description: 'Spectacular filming location'
-    }
+    { id: 1, name: 'Home Location', price: 0, quality: 3, description: 'Film at home' },
+    { id: 2, name: 'Video Studio', price: 25000, quality: 5, description: 'Professional video studio' },
+    { id: 3, name: 'Production Studio', price: 100000, quality: 7, description: 'Full production facility' },
+    { id: 4, name: 'Sound Stage', price: 500000, quality: 9, description: 'Hollywood sound stage' },
+    { id: 5, name: 'Epic Location', price: 2000000, quality: 10, description: 'Spectacular filming location' }
   ];
 
   const randomTitles = [
-    'Money Dreams', 'Street Life', 'Rise Up', 'Hustle Hard', 'Golden Days',
-    'Midnight Vibes', 'City Lights', 'No Limits', 'Top Floor', 'Real Talk',
-    'Grinding Daily', 'Success Story', 'Never Stop', 'Diamond Heart', 'Legendary',
-    'From Zero', 'Big Dreams', 'Victory Lap', 'Unstoppable', 'Crown Me',
-    'Fire Flow', 'Boss Mode', 'Next Level', 'Pure Energy', 'Street King',
-    'Money Moves', 'Grind Time', 'Top Shelf', 'Real One', 'Empire State'
+    'Money Dreams', 'Street Life', 'Rise Up', 'Hustle Hard', 'Golden Days', 'Midnight Vibes',
+    'City Lights', 'No Limits', 'Top Floor', 'Real Talk', 'Grinding Daily', 'Success Story',
+    'Never Stop', 'Diamond Heart', 'Legendary', 'From Zero', 'Big Dreams', 'Victory Lap',
+    'Unstoppable', 'Crown Me', 'Fire Flow', 'Boss Mode', 'Next Level', 'Pure Energy',
+    'Street King', 'Money Moves', 'Grind Time', 'Top Shelf', 'Real One', 'Empire State'
   ];
 
   const albumNames = [
     'The Come Up', 'Street Dreams', 'Golden Hour', 'No Sleep', 'Legendary',
     'From The Bottom', 'City Lights', 'The Journey', 'Rise & Grind', 'Victory Lap',
-    'Midnight Sessions', 'Crown Collection', 'Street Symphony', 'Diamond Life', 'Empire Rising',
-    'Pure Fire', 'Next Chapter', 'Boss Level', 'Money Talk', 'Street Royalty'
+    'Midnight Sessions', 'Crown Collection', 'Street Symphony', 'Diamond Life',
+    'Empire Rising', 'Pure Fire', 'Next Chapter', 'Boss Level', 'Money Talk', 'Street Royalty'
   ];
 
   // Check for duplicate titles
@@ -351,7 +141,6 @@ export default function MusicStudioPage() {
       }
       title = `${baseTitle} ${counter}`;
     }
-
     setTrackTitle(title);
   };
 
@@ -371,7 +160,6 @@ export default function MusicStudioPage() {
       }
       title = `${baseTitle} ${counter}`;
     }
-
     setAlbumTitle(title);
   };
 
@@ -400,7 +188,6 @@ export default function MusicStudioPage() {
     }
 
     const totalCost = selectedLyrics.price + selectedProducer.price + selectedDirector.price + selectedStudio.price;
-
     if (player.netWorth < totalCost) return;
 
     const baseQuality = Math.floor((selectedLyrics.quality + selectedProducer.quality + selectedDirector.quality + selectedStudio.quality) / 4);
@@ -516,7 +303,6 @@ export default function MusicStudioPage() {
     if (!selectedTrack || !selectedVideoProducer || !selectedVideoDirector || !selectedVideoStudio || player.energy < 30) return;
 
     const totalCost = selectedVideoProducer.price + selectedVideoDirector.price + selectedVideoStudio.price;
-
     if (player.netWorth < totalCost) return;
 
     const track = tracks.find(t => t.id === selectedTrack);
@@ -573,16 +359,15 @@ export default function MusicStudioPage() {
     setSelectedVideoStudio(null);
   };
 
-  // Enhanced releaseContent function with proper loading state
+  // Enhanced releaseContent function with proper loading state and success feedback
   const releaseContent = async (content) => {
-    if (isReleasing || releasingContentId === content.id) return;
+    if (isReleasing || releasingContentId === content.id || releasedContent.has(content.id)) return;
 
     setIsReleasing(true);
     setReleasingContentId(content.id);
 
     // Determine platform based on content type
     const platform = content.type === 'video' ? 'RapTube' : 'Rapify';
-    const platformName = content.type === 'video' ? 'RapTube' : 'Rapify';
 
     try {
       // Simulate release process with delay
@@ -599,13 +384,16 @@ export default function MusicStudioPage() {
         }
       });
 
+      // Mark as released in local state
+      setReleasedContent(prev => new Set([...prev, content.id]));
+
       dispatch({
         type: 'ADD_NOTIFICATION',
         payload: {
           id: Date.now(),
           type: 'success',
-          title: `Released on ${platformName}!`,
-          message: `"${content.title}" is now live on ${platformName} and earning views!`,
+          title: `Released on ${platform}!`,
+          message: `"${content.title}" is now live on ${platform} and earning views!`,
           timestamp: new Date().toISOString()
         }
       });
@@ -630,11 +418,7 @@ export default function MusicStudioPage() {
 
   const announceRelease = (releaseId) => {
     try {
-      dispatch({
-        type: 'ANNOUNCE_RELEASE',
-        payload: { releaseId }
-      });
-
+      dispatch({ type: 'ANNOUNCE_RELEASE', payload: { releaseId } });
       const release = releases.find(r => r.id === releaseId);
       dispatch({
         type: 'ADD_NOTIFICATION',
@@ -671,7 +455,7 @@ export default function MusicStudioPage() {
   // Get tracks available for music videos (not having a video already)
   const availableTracksForVideo = tracks.filter(track => track && !track.hasVideo);
 
-  const releasedContent = releases.filter(release => release && !release.announced);
+  const releasedContentList = releases.filter(release => release && !release.announced);
 
   const formatPrice = (price) => {
     if (price === 0) return 'FREE';
@@ -681,6 +465,11 @@ export default function MusicStudioPage() {
       return `$${(price / 1000).toFixed(0)}K`;
     }
     return `$${price}`;
+  };
+
+  // Check if content is already released
+  const isContentReleased = (content) => {
+    return content.released || releasedContent.has(content.id) || releases.some(r => r.contentId === content.id);
   };
 
   return (
@@ -766,7 +555,9 @@ export default function MusicStudioPage() {
                   onChange={(e) => setTrackTitle(e.target.value)}
                   placeholder="Enter track title"
                   className={`w-full p-3 bg-dark-surface/60 border border-dark-border text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:border-neon-cyan/50 rounded-game ${
-                    trackTitle && isDuplicateTitle(trackTitle) ? 'border-neon-red/50 focus:ring-neon-red/50' : 'focus:ring-neon-cyan/50'
+                    trackTitle && isDuplicateTitle(trackTitle) 
+                      ? 'border-neon-red/50 focus:ring-neon-red/50' 
+                      : 'focus:ring-neon-cyan/50'
                   }`}
                   maxLength={30}
                 />
@@ -790,7 +581,6 @@ export default function MusicStudioPage() {
                 {lyricsOptions.map((lyrics) => {
                   const canAfford = player.netWorth >= lyrics.price;
                   const isSelected = selectedLyrics?.id === lyrics.id;
-
                   return (
                     <button
                       key={lyrics.id}
@@ -828,9 +618,7 @@ export default function MusicStudioPage() {
                                 icon={FiStar}
                                 className={`text-xs ${
                                   i < lyrics.quality
-                                    ? isSelected
-                                      ? 'text-white'
-                                      : 'text-neon-orange'
+                                    ? isSelected ? 'text-white' : 'text-neon-orange'
                                     : 'text-text-disabled'
                                 }`}
                               />
@@ -838,15 +626,11 @@ export default function MusicStudioPage() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div
-                            className={`font-bold text-sm ${
-                              lyrics.price === 0
-                                ? 'text-neon-green'
-                                : isSelected
-                                ? 'text-white'
-                                : 'text-neon-cyan'
-                            }`}
-                          >
+                          <div className={`font-bold text-sm ${
+                            lyrics.price === 0 
+                              ? 'text-neon-green' 
+                              : isSelected ? 'text-white' : 'text-neon-cyan'
+                          }`}>
                             {formatPrice(lyrics.price)}
                           </div>
                         </div>
@@ -864,7 +648,6 @@ export default function MusicStudioPage() {
                 {producers.map((producer) => {
                   const canAfford = player.netWorth >= producer.price;
                   const isSelected = selectedProducer?.id === producer.id;
-
                   return (
                     <button
                       key={producer.id}
@@ -889,9 +672,7 @@ export default function MusicStudioPage() {
                                 icon={FiStar}
                                 className={`text-xs ${
                                   i < producer.quality
-                                    ? isSelected
-                                      ? 'text-white'
-                                      : 'text-neon-orange'
+                                    ? isSelected ? 'text-white' : 'text-neon-orange'
                                     : 'text-text-disabled'
                                 }`}
                               />
@@ -899,15 +680,11 @@ export default function MusicStudioPage() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div
-                            className={`font-bold text-sm ${
-                              producer.price === 0
-                                ? 'text-neon-green'
-                                : isSelected
-                                ? 'text-white'
-                                : 'text-neon-cyan'
-                            }`}
-                          >
+                          <div className={`font-bold text-sm ${
+                            producer.price === 0 
+                              ? 'text-neon-green' 
+                              : isSelected ? 'text-white' : 'text-neon-cyan'
+                          }`}>
                             {formatPrice(producer.price)}
                           </div>
                         </div>
@@ -925,7 +702,6 @@ export default function MusicStudioPage() {
                 {directors.map((director) => {
                   const canAfford = player.netWorth >= director.price;
                   const isSelected = selectedDirector?.id === director.id;
-
                   return (
                     <button
                       key={director.id}
@@ -950,9 +726,7 @@ export default function MusicStudioPage() {
                                 icon={FiStar}
                                 className={`text-xs ${
                                   i < director.quality
-                                    ? isSelected
-                                      ? 'text-white'
-                                      : 'text-neon-orange'
+                                    ? isSelected ? 'text-white' : 'text-neon-orange'
                                     : 'text-text-disabled'
                                 }`}
                               />
@@ -960,15 +734,11 @@ export default function MusicStudioPage() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div
-                            className={`font-bold text-sm ${
-                              director.price === 0
-                                ? 'text-neon-green'
-                                : isSelected
-                                ? 'text-white'
-                                : 'text-neon-cyan'
-                            }`}
-                          >
+                          <div className={`font-bold text-sm ${
+                            director.price === 0 
+                              ? 'text-neon-green' 
+                              : isSelected ? 'text-white' : 'text-neon-cyan'
+                          }`}>
                             {formatPrice(director.price)}
                           </div>
                         </div>
@@ -986,7 +756,6 @@ export default function MusicStudioPage() {
                 {studios.map((studio) => {
                   const canAfford = player.netWorth >= studio.price;
                   const isSelected = selectedStudio?.id === studio.id;
-
                   return (
                     <button
                       key={studio.id}
@@ -1011,9 +780,7 @@ export default function MusicStudioPage() {
                                 icon={FiStar}
                                 className={`text-xs ${
                                   i < studio.quality
-                                    ? isSelected
-                                      ? 'text-white'
-                                      : 'text-neon-orange'
+                                    ? isSelected ? 'text-white' : 'text-neon-orange'
                                     : 'text-text-disabled'
                                 }`}
                               />
@@ -1021,15 +788,11 @@ export default function MusicStudioPage() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div
-                            className={`font-bold text-sm ${
-                              studio.price === 0
-                                ? 'text-neon-green'
-                                : isSelected
-                                ? 'text-white'
-                                : 'text-neon-cyan'
-                            }`}
-                          >
+                          <div className={`font-bold text-sm ${
+                            studio.price === 0 
+                              ? 'text-neon-green' 
+                              : isSelected ? 'text-white' : 'text-neon-cyan'
+                          }`}>
                             {formatPrice(studio.price)}
                           </div>
                         </div>
@@ -1071,21 +834,13 @@ export default function MusicStudioPage() {
                   )}
                   <div className="border-t border-dark-border/30 pt-2 flex justify-between font-bold">
                     <span className="text-text-primary">Total Cost</span>
-                    <span
-                      className={`${
-                        (selectedLyrics?.price || 0) +
-                        (selectedProducer?.price || 0) +
-                        (selectedDirector?.price || 0) +
-                        (selectedStudio?.price || 0) === 0
-                          ? 'text-neon-green'
-                          : 'text-neon-cyan'
-                      }`}
-                    >
+                    <span className={`${
+                      (selectedLyrics?.price || 0) + (selectedProducer?.price || 0) + (selectedDirector?.price || 0) + (selectedStudio?.price || 0) === 0 
+                        ? 'text-neon-green' 
+                        : 'text-neon-cyan'
+                    }`}>
                       {formatPrice(
-                        (selectedLyrics?.price || 0) +
-                        (selectedProducer?.price || 0) +
-                        (selectedDirector?.price || 0) +
-                        (selectedStudio?.price || 0)
+                        (selectedLyrics?.price || 0) + (selectedProducer?.price || 0) + (selectedDirector?.price || 0) + (selectedStudio?.price || 0)
                       )}
                     </span>
                   </div>
@@ -1139,7 +894,9 @@ export default function MusicStudioPage() {
                       onChange={(e) => setAlbumTitle(e.target.value)}
                       placeholder="Enter album title"
                       className={`w-full p-3 bg-dark-surface/60 border border-dark-border text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:border-neon-cyan/50 rounded-game ${
-                        albumTitle && isDuplicateTitle(albumTitle, 'album') ? 'border-neon-red/50 focus:ring-neon-red/50' : 'focus:ring-neon-cyan/50'
+                        albumTitle && isDuplicateTitle(albumTitle, 'album') 
+                          ? 'border-neon-red/50 focus:ring-neon-red/50' 
+                          : 'focus:ring-neon-cyan/50'
                       }`}
                       maxLength={30}
                     />
@@ -1189,9 +946,7 @@ export default function MusicStudioPage() {
                                 icon={FiStar}
                                 className={`text-xs ${
                                   i < track.quality
-                                    ? selectedTracks.includes(track.id)
-                                      ? 'text-white'
-                                      : 'text-neon-orange'
+                                    ? selectedTracks.includes(track.id) ? 'text-white' : 'text-neon-orange'
                                     : 'text-text-disabled'
                                 }`}
                               />
@@ -1200,7 +955,6 @@ export default function MusicStudioPage() {
                         </div>
                       </button>
                     ))}
-
                     {availableTracksForAlbum.length === 0 && (
                       <div className="text-center py-4 text-text-muted text-sm">
                         No available tracks. Create unreleased tracks first!
@@ -1277,9 +1031,7 @@ export default function MusicStudioPage() {
                                 icon={FiStar}
                                 className={`text-xs ${
                                   i < track.quality
-                                    ? selectedTrack === track.id
-                                      ? 'text-white'
-                                      : 'text-neon-orange'
+                                    ? selectedTrack === track.id ? 'text-white' : 'text-neon-orange'
                                     : 'text-text-disabled'
                                 }`}
                               />
@@ -1288,7 +1040,6 @@ export default function MusicStudioPage() {
                         </div>
                       </button>
                     ))}
-
                     {availableTracksForVideo.length === 0 && (
                       <div className="text-center py-4 text-text-muted text-sm">
                         No tracks available for music videos. All tracks already have videos.
@@ -1304,7 +1055,6 @@ export default function MusicStudioPage() {
                     {videoProducers.map((producer) => {
                       const canAfford = player.netWorth >= producer.price;
                       const isSelected = selectedVideoProducer?.id === producer.id;
-
                       return (
                         <button
                           key={producer.id}
@@ -1324,15 +1074,11 @@ export default function MusicStudioPage() {
                               <div className="text-xs opacity-80">{producer.description}</div>
                             </div>
                             <div className="text-right">
-                              <div
-                                className={`font-bold text-sm ${
-                                  producer.price === 0
-                                    ? 'text-neon-green'
-                                    : isSelected
-                                    ? 'text-white'
-                                    : 'text-neon-cyan'
-                                }`}
-                              >
+                              <div className={`font-bold text-sm ${
+                                producer.price === 0 
+                                  ? 'text-neon-green' 
+                                  : isSelected ? 'text-white' : 'text-neon-cyan'
+                              }`}>
                                 {formatPrice(producer.price)}
                               </div>
                             </div>
@@ -1350,7 +1096,6 @@ export default function MusicStudioPage() {
                     {videoDirectors.map((director) => {
                       const canAfford = player.netWorth >= director.price;
                       const isSelected = selectedVideoDirector?.id === director.id;
-
                       return (
                         <button
                           key={director.id}
@@ -1370,15 +1115,11 @@ export default function MusicStudioPage() {
                               <div className="text-xs opacity-80">{director.description}</div>
                             </div>
                             <div className="text-right">
-                              <div
-                                className={`font-bold text-sm ${
-                                  director.price === 0
-                                    ? 'text-neon-green'
-                                    : isSelected
-                                    ? 'text-white'
-                                    : 'text-neon-cyan'
-                                }`}
-                              >
+                              <div className={`font-bold text-sm ${
+                                director.price === 0 
+                                  ? 'text-neon-green' 
+                                  : isSelected ? 'text-white' : 'text-neon-cyan'
+                              }`}>
                                 {formatPrice(director.price)}
                               </div>
                             </div>
@@ -1396,7 +1137,6 @@ export default function MusicStudioPage() {
                     {videoStudios.map((studio) => {
                       const canAfford = player.netWorth >= studio.price;
                       const isSelected = selectedVideoStudio?.id === studio.id;
-
                       return (
                         <button
                           key={studio.id}
@@ -1416,15 +1156,11 @@ export default function MusicStudioPage() {
                               <div className="text-xs opacity-80">{studio.description}</div>
                             </div>
                             <div className="text-right">
-                              <div
-                                className={`font-bold text-sm ${
-                                  studio.price === 0
-                                    ? 'text-neon-green'
-                                    : isSelected
-                                    ? 'text-white'
-                                    : 'text-neon-cyan'
-                                }`}
-                              >
+                              <div className={`font-bold text-sm ${
+                                studio.price === 0 
+                                  ? 'text-neon-green' 
+                                  : isSelected ? 'text-white' : 'text-neon-cyan'
+                              }`}>
                                 {formatPrice(studio.price)}
                               </div>
                             </div>
@@ -1460,19 +1196,13 @@ export default function MusicStudioPage() {
                       )}
                       <div className="border-t border-dark-border/30 pt-1 flex justify-between font-bold">
                         <span className="text-text-primary">Total Cost</span>
-                        <span
-                          className={`${
-                            (selectedVideoProducer?.price || 0) +
-                            (selectedVideoDirector?.price || 0) +
-                            (selectedVideoStudio?.price || 0) === 0
-                              ? 'text-neon-green'
-                              : 'text-neon-cyan'
-                          }`}
-                        >
+                        <span className={`${
+                          (selectedVideoProducer?.price || 0) + (selectedVideoDirector?.price || 0) + (selectedVideoStudio?.price || 0) === 0 
+                            ? 'text-neon-green' 
+                            : 'text-neon-cyan'
+                        }`}>
                           {formatPrice(
-                            (selectedVideoProducer?.price || 0) +
-                            (selectedVideoDirector?.price || 0) +
-                            (selectedVideoStudio?.price || 0)
+                            (selectedVideoProducer?.price || 0) + (selectedVideoDirector?.price || 0) + (selectedVideoStudio?.price || 0)
                           )}
                         </span>
                       </div>
@@ -1507,11 +1237,11 @@ export default function MusicStudioPage() {
             animate={{ opacity: 1, y: 0 }}
           >
             {/* Released Content - Announcement Section */}
-            {releasedContent.length > 0 && (
+            {releasedContentList.length > 0 && (
               <div>
                 <h3 className="text-base font-bold text-text-primary mb-3">Ready for Social Media Announcement</h3>
                 <div className="space-y-3">
-                  {releasedContent.map((release) => (
+                  {releasedContentList.map((release) => (
                     <div key={release.id} className="game-card p-4 shadow-dark">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex-1">
@@ -1522,11 +1252,12 @@ export default function MusicStudioPage() {
                           <p className="text-xs text-text-muted">Released: {release.releaseDate}</p>
                         </div>
                         <div className="text-right">
-                          <div className="text-base font-bold text-neon-cyan animate-neon">{(release.views || 0).toLocaleString()} views</div>
+                          <div className="text-base font-bold text-neon-cyan animate-neon">
+                            {(release.views || 0).toLocaleString()} views
+                          </div>
                           <div className="text-xs text-neon-green">${Math.floor(release.earnings || 0)} earned</div>
                         </div>
                       </div>
-
                       <button
                         onClick={() => announceRelease(release.id)}
                         className="w-full game-button hover-glow text-sm"
@@ -1559,13 +1290,19 @@ export default function MusicStudioPage() {
                           <p className="text-xs text-text-muted">Created: {track.createdAt}</p>
                           <div className="flex items-center space-x-2 mt-1">
                             {track.inAlbum && (
-                              <span className="text-xs bg-neon-purple/10 text-neon-purple px-2 py-1 rounded-full border border-neon-purple/30">In Album</span>
+                              <span className="text-xs bg-neon-purple/10 text-neon-purple px-2 py-1 rounded-full border border-neon-purple/30">
+                                In Album
+                              </span>
                             )}
                             {track.hasVideo && (
-                              <span className="text-xs bg-neon-red/10 text-neon-red px-2 py-1 rounded-full border border-neon-red/30">Has Video</span>
+                              <span className="text-xs bg-neon-red/10 text-neon-red px-2 py-1 rounded-full border border-neon-red/30">
+                                Has Video
+                              </span>
                             )}
-                            {track.released && (
-                              <span className="text-xs bg-neon-green/10 text-neon-green px-2 py-1 rounded-full border border-neon-green/30">Released</span>
+                            {isContentReleased(track) && (
+                              <span className="text-xs bg-neon-green/10 text-neon-green px-2 py-1 rounded-full border border-neon-green/30">
+                                Released
+                              </span>
                             )}
                           </div>
                         </div>
@@ -1575,7 +1312,9 @@ export default function MusicStudioPage() {
                               <SafeIcon
                                 key={i}
                                 icon={FiStar}
-                                className={`text-xs ${i < track.quality ? 'text-neon-orange' : 'text-text-disabled'}`}
+                                className={`text-xs ${
+                                  i < track.quality ? 'text-neon-orange' : 'text-text-disabled'
+                                }`}
                               />
                             ))}
                           </div>
@@ -1583,7 +1322,7 @@ export default function MusicStudioPage() {
                         </div>
                       </div>
 
-                      {!track.released && !track.inAlbum ? (
+                      {!isContentReleased(track) && !track.inAlbum ? (
                         <button
                           onClick={() => releaseContent(track)}
                           disabled={isReleasing && releasingContentId === track.id}
@@ -1610,8 +1349,9 @@ export default function MusicStudioPage() {
                           📀 Part of Album (Cannot be released separately)
                         </div>
                       ) : (
-                        <div className="text-center py-2 text-neon-green font-semibold text-sm">
-                          ✓ Released on Rapify
+                        <div className="text-center py-2 text-neon-green font-semibold text-sm flex items-center justify-center space-x-2">
+                          <SafeIcon icon={FiCheck} />
+                          <span>Released on Rapify</span>
                         </div>
                       )}
                     </div>
@@ -1639,7 +1379,9 @@ export default function MusicStudioPage() {
                               <SafeIcon
                                 key={i}
                                 icon={FiStar}
-                                className={`text-xs ${i < album.quality ? 'text-neon-orange' : 'text-text-disabled'}`}
+                                className={`text-xs ${
+                                  i < album.quality ? 'text-neon-orange' : 'text-text-disabled'
+                                }`}
                               />
                             ))}
                           </div>
@@ -1647,7 +1389,7 @@ export default function MusicStudioPage() {
                         </div>
                       </div>
 
-                      {!album.released ? (
+                      {!isContentReleased(album) ? (
                         <button
                           onClick={() => releaseContent(album)}
                           disabled={isReleasing && releasingContentId === album.id}
@@ -1670,8 +1412,9 @@ export default function MusicStudioPage() {
                           )}
                         </button>
                       ) : (
-                        <div className="text-center py-2 text-neon-green font-semibold text-sm">
-                          ✓ Released on Rapify
+                        <div className="text-center py-2 text-neon-green font-semibold text-sm flex items-center justify-center space-x-2">
+                          <SafeIcon icon={FiCheck} />
+                          <span>Released on Rapify</span>
                         </div>
                       )}
                     </div>
@@ -1703,7 +1446,9 @@ export default function MusicStudioPage() {
                               <SafeIcon
                                 key={i}
                                 icon={FiStar}
-                                className={`text-xs ${i < video.quality ? 'text-neon-orange' : 'text-text-disabled'}`}
+                                className={`text-xs ${
+                                  i < video.quality ? 'text-neon-orange' : 'text-text-disabled'
+                                }`}
                               />
                             ))}
                           </div>
@@ -1711,7 +1456,7 @@ export default function MusicStudioPage() {
                         </div>
                       </div>
 
-                      {!video.released ? (
+                      {!isContentReleased(video) ? (
                         <button
                           onClick={() => releaseContent(video)}
                           disabled={isReleasing && releasingContentId === video.id}
@@ -1734,8 +1479,9 @@ export default function MusicStudioPage() {
                           )}
                         </button>
                       ) : (
-                        <div className="text-center py-2 text-neon-green font-semibold text-sm">
-                          ✓ Released on RapTube
+                        <div className="text-center py-2 text-neon-green font-semibold text-sm flex items-center justify-center space-x-2">
+                          <SafeIcon icon={FiCheck} />
+                          <span>Released on RapTube</span>
                         </div>
                       )}
                     </div>

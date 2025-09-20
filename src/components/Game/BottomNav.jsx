@@ -4,7 +4,7 @@ import { useGame } from '../../context/GameContext';
 import SafeIcon from '../../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 
-const { FiHome, FiBriefcase, FiMusic, FiGlobe, FiShoppingBag } = FiIcons;
+const { FiHome, FiBriefcase, FiMusic, FiGlobe, FiShoppingBag, FiBookOpen } = FiIcons;
 
 export default function BottomNav() {
   const navigate = useNavigate();
@@ -34,8 +34,8 @@ export default function BottomNav() {
               key={item.path}
               onClick={() => handleNavigation(item.path)}
               className={`flex flex-col items-center py-2 px-3 rounded-2xl transition-all duration-300 min-w-0 flex-shrink-0 ${
-                isActive 
-                  ? 'bg-gradient-to-b from-cyan-400/20 to-purple-500/20 border border-cyan-400/30 shadow-lg' 
+                isActive
+                  ? 'bg-gradient-to-b from-cyan-400/20 to-purple-500/20 border border-cyan-400/30 shadow-lg'
                   : 'hover:bg-white/10'
               }`}
             >
