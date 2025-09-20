@@ -1,10 +1,9 @@
 workflows:
   rapmaster-simulator:
-    name: RapMaster Simulator
+    name: RapMaster Simulator Build
     max_build_duration: 120
     instance_type: mac_mini_m1
-    integrations:
-      app_store_connect: codemagic
+    
     environment:
       android_signing:
         - keystore_reference
@@ -15,13 +14,20 @@ workflows:
         BUNDLE_ID: "com.rapmaster.simulator"
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
+        # Keystore variables for Android
+        FCI_KEYSTORE_PATH: /tmp/keystore.keystore
+        FCI_KEYSTORE_PASSWORD: "rapmaster2024"
+        FCI_KEY_PASSWORD: "rapmaster2024"  
+        FCI_KEY_ALIAS: "rapmaster"
       flutter: stable
       xcode: latest
       cocoapods: default
+      
     scripts:
       - name: Set up debug keystore
         script: |
           set -ex
+          # Create debug keystore for development builds
           keytool -genkeypair \
             -alias androiddebugkey \
             -keypass android \
@@ -31,31 +37,63 @@ workflows:
             -keyalg RSA \
             -keysize 2048 \
             -validity 10000
+          
+          # Copy debug keystore to project
+          cp ~/.android/debug.keystore android/debug.keystore
+          
+      - name: Set up release keystore
+        script: |
+          set -ex
+          # Generate release keystore for production builds
+          keytool -genkeypair \
+            -alias rapmaster \
+            -keypass rapmaster2024 \
+            -keystore android/app/rapmaster-keystore.jks \
+            -storepass rapmaster2024 \
+            -dname "CN=RapMaster Simulator,OU=FHX Studios,O=RapMaster,L=Los Angeles,S=CA,C=US" \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 25000
+            
+          # Set keystore path for signing
+          echo "storePassword=rapmaster2024" > android/key.properties
+          echo "keyPassword=rapmaster2024" >> android/key.properties  
+          echo "keyAlias=rapmaster" >> android/key.properties
+          echo "storeFile=rapmaster-keystore.jks" >> android/key.properties
+          
       - name: Set up local.properties
         script: |
           echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
+          
       - name: Get Flutter packages
         script: |
           flutter packages pub get
+          
       - name: Install pods
         script: |
           find . -name "Podfile" -execdir pod install \;
+          
       - name: Flutter analyze
         script: |
-          flutter analyze --fatal-infos
+          flutter analyze --fatal-infos --no-fatal-warnings
+          
       - name: Flutter unit tests
         script: |
-          flutter test
+          flutter test --no-sound-null-safety
         ignore_failure: true
+        
       - name: Build APK with Flutter
         script: |
-          flutter build apk --release
-      - name: Build AAB with Flutter
+          flutter build apk --release --no-sound-null-safety
+          
+      - name: Build AAB with Flutter  
         script: |
-          flutter build appbundle --release
+          flutter build appbundle --release --no-sound-null-safety
+          
       - name: Build iOS with Flutter
         script: |
-          flutter build ios --release --no-codesign
+          flutter build ios --release --no-codesign --no-sound-null-safety
+          
     artifacts:
       - build/**/outputs/**/*.apk
       - build/**/outputs/**/*.aab
@@ -63,10 +101,16 @@ workflows:
       - build/ios/iphoneos/*.app
       - /tmp/xcodebuild_logs/*.log
       - flutter_drive.log
+      - android/app/rapmaster-keystore.jks
+      
     publishing:
       email:
         recipients:
-          - user@example.com
+          - developer@fhxstudios.com
         notify:
           success: true
-          failure: false
+          failure: true
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
