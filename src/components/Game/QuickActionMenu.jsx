@@ -5,19 +5,7 @@ import { useGame } from '../../context/GameContext';
 import SafeIcon from '../../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 
-const { 
-  FiPlus, 
-  FiX, 
-  FiTarget, 
-  FiAward, 
-  FiBarChart, 
-  FiMusic, 
-  FiVideo, 
-  FiDisc, 
-  FiMic, 
-  FiUsers,
-  FiTrendingUp
-} = FiIcons;
+const { FiPlus, FiX, FiTarget, FiAward, FiBarChart, FiMusic, FiVideo, FiDisc, FiMic, FiUsers, FiTrendingUp, FiUpload } = FiIcons;
 
 export default function QuickActionMenu() {
   const navigate = useNavigate();
@@ -66,12 +54,12 @@ export default function QuickActionMenu() {
       action: () => navigate('/game/collaborations')
     },
     {
-      id: 'studio',
-      title: 'Studio',
-      description: 'Create music',
-      icon: FiMusic,
+      id: 'releases',
+      title: 'Releases',
+      description: 'Publish content',
+      icon: FiUpload,
       color: 'bg-gradient-to-br from-indigo-400 to-purple-500',
-      action: () => navigate('/game/studio')
+      action: () => navigate('/game/releases')
     }
   ];
 
@@ -98,10 +86,7 @@ export default function QuickActionMenu() {
         whileTap={{ scale: 0.9 }}
         animate={{ rotate: isOpen ? 45 : 0 }}
       >
-        <SafeIcon 
-          icon={isOpen ? FiX : FiPlus} 
-          className="text-2xl text-white" 
-        />
+        <SafeIcon icon={isOpen ? FiX : FiPlus} className="text-2xl text-white" />
       </motion.button>
 
       {/* Backdrop */}

@@ -23,10 +23,23 @@ const initialState = {
       production: 1
     },
     socialMedia: {
-      rapgram: { followers: 0, posts: 0 },
-      raptube: { subscribers: 0, videos: 0, totalViews: 0 },
-      rapify: { listeners: 0, streams: 0 },
-      riktok: { followers: 0, videos: 0 }
+      rapgram: {
+        followers: 0,
+        posts: 0
+      },
+      raptube: {
+        subscribers: 0,
+        videos: 0,
+        totalViews: 0
+      },
+      rapify: {
+        listeners: 0,
+        streams: 0
+      },
+      riktok: {
+        followers: 0,
+        videos: 0
+      }
     },
     achievements: [],
     inventory: []
@@ -57,7 +70,10 @@ function gameReducer(state, action) {
     case 'CREATE_CHARACTER':
       return {
         ...state,
-        player: { ...state.player, ...action.payload },
+        player: {
+          ...state.player,
+          ...action.payload
+        },
         gameStarted: true
       };
 
@@ -73,12 +89,21 @@ function gameReducer(state, action) {
     case 'UPDATE_PLAYER':
       const newState = {
         ...state,
-        player: { ...state.player, ...action.payload }
+        player: {
+          ...state.player,
+          ...action.payload
+        }
       };
+      
       // Auto-save when player data changes
       if (newState.slot) {
-        localStorage.setItem(`rapCareer_slot_${newState.slot}`, JSON.stringify(newState));
+        try {
+          localStorage.setItem(`rapCareer_slot_${newState.slot}`, JSON.stringify(newState));
+        } catch (error) {
+          console.error('Error saving game:', error);
+        }
       }
+      
       return newState;
 
     case 'ADD_TRACK':
@@ -111,15 +136,15 @@ function gameReducer(state, action) {
         concerts: [...state.concerts, action.payload],
         earnings: {
           ...state.earnings,
-          concerts: state.earnings.concerts + action.payload.earnings
+          concerts: state.earnings.concerts + (action.payload.earnings || 0)
         }
       };
 
     case 'MARK_TRACKS_IN_ALBUM':
       return {
         ...state,
-        tracks: state.tracks.map(track =>
-          action.payload.trackIds.includes(track.id)
+        tracks: state.tracks.map(track => 
+          action.payload.trackIds.includes(track.id) 
             ? { ...track, inAlbum: true }
             : track
         )
@@ -128,15 +153,16 @@ function gameReducer(state, action) {
     case 'MARK_TRACK_HAS_VIDEO':
       return {
         ...state,
-        tracks: state.tracks.map(track =>
-          track.id === action.payload.trackId
+        tracks: state.tracks.map(track => 
+          track.id === action.payload.trackId 
             ? { ...track, hasVideo: true }
             : track
         )
       };
 
     case 'ADD_SOCIAL_POST':
-      const engagementBonus = Math.floor(action.payload.likes / 100);
+      const engagementBonus = Math.floor((action.payload.likes || 0) / 100);
+      
       return {
         ...state,
         socialPosts: [...state.socialPosts, action.payload],
@@ -148,8 +174,8 @@ function gameReducer(state, action) {
             ...state.player.socialMedia,
             [action.payload.platform]: {
               ...state.player.socialMedia[action.payload.platform],
-              posts: state.player.socialMedia[action.payload.platform].posts + 1,
-              followers: state.player.socialMedia[action.payload.platform].followers + engagementBonus
+              posts: (state.player.socialMedia[action.payload.platform].posts || 0) + 1,
+              followers: (state.player.socialMedia[action.payload.platform].followers || 0) + engagementBonus
             }
           }
         }
@@ -157,17 +183,22 @@ function gameReducer(state, action) {
 
     case 'RELEASE_CONTENT':
       // Enhanced release system with initial views based on quality and fame
-      const { contentId, type, title, quality, platform } = action.payload;
+      const { contentId, type, title, quality = 5, platform } = action.payload;
 
+      // Null checks and safe calculations
+      const safeQuality = Math.max(1, Math.min(10, quality || 5));
+      const safeFame = Math.max(0, state.player.fame || 0);
+      const safeFans = Math.max(0, state.player.fans || 0);
+      
       // Calculate initial views boost based on player stats
-      const fameBoost = Math.floor(state.player.fame * 2);
-      const fanBoost = Math.floor(state.player.fans * 0.1);
+      const fameBoost = Math.floor(safeFame * 2);
+      const fanBoost = Math.floor(safeFans * 0.1);
       const socialBoost = type === 'video' 
-        ? Math.floor(state.player.socialMedia.raptube.subscribers * 0.05)
-        : Math.floor(state.player.socialMedia.rapify.listeners * 0.03);
+        ? Math.floor((state.player.socialMedia?.raptube?.subscribers || 0) * 0.05)
+        : Math.floor((state.player.socialMedia?.rapify?.listeners || 0) * 0.03);
 
       // Quality multiplier for initial views
-      const qualityMultiplier = Math.max(0.5, quality / 10);
+      const qualityMultiplier = Math.max(0.5, safeQuality / 10);
 
       // Base initial views
       const baseInitialViews = type === 'video' ? 500 : type === 'album' ? 300 : 200;
@@ -196,34 +227,38 @@ function gameReducer(state, action) {
         dailyViews: initialViews,
         weeklyViews: initialViews,
         monthlyViews: initialViews,
-        viewsHistory: [{ week: state.player.week, views: initialViews }],
+        viewsHistory: [{
+          week: state.player.week,
+          views: initialViews
+        }],
         peakWeeklyViews: initialViews,
         chartPosition: null,
         isViral: initialViews > 10000,
         releaseWeek: state.player.week,
-        ageMultiplier: 1.0
+        ageMultiplier: 1.0,
+        quality: safeQuality
       };
 
       return {
         ...state,
         releases: [...state.releases, newRelease],
-        tracks: state.tracks.map(track =>
-          track.id === contentId
+        tracks: state.tracks.map(track => 
+          track.id === contentId 
             ? { ...track, released: true, releaseId: newRelease.id }
             : track
         ),
-        albums: state.albums.map(album =>
-          album.id === contentId
+        albums: state.albums.map(album => 
+          album.id === contentId 
             ? { ...album, released: true, releaseId: newRelease.id }
             : album
         ),
-        musicVideos: state.musicVideos.map(video =>
-          video.id === contentId
+        musicVideos: state.musicVideos.map(video => 
+          video.id === contentId 
             ? { ...video, released: true, releaseId: newRelease.id }
             : video
         ),
-        collaborations: state.collaborations.map(collab =>
-          collab.id === contentId
+        collaborations: state.collaborations.map(collab => 
+          collab.id === contentId 
             ? { ...collab, released: true, releaseId: newRelease.id }
             : collab
         ),
@@ -236,7 +271,7 @@ function gameReducer(state, action) {
             [type === 'video' ? 'raptube' : 'rapify']: {
               ...state.player.socialMedia[type === 'video' ? 'raptube' : 'rapify'],
               [type === 'video' ? 'totalViews' : 'streams']: 
-                state.player.socialMedia[type === 'video' ? 'raptube' : 'rapify'][type === 'video' ? 'totalViews' : 'streams'] + initialViews
+                (state.player.socialMedia[type === 'video' ? 'raptube' : 'rapify'][type === 'video' ? 'totalViews' : 'streams'] || 0) + initialViews
             }
           }
         },
@@ -245,16 +280,22 @@ function gameReducer(state, action) {
           total: state.earnings.total + initialEarnings,
           thisWeek: state.earnings.thisWeek + initialEarnings,
           [type === 'video' ? 'youtube' : 'streaming']: 
-            state.earnings[type === 'video' ? 'youtube' : 'streaming'] + initialEarnings
+            (state.earnings[type === 'video' ? 'youtube' : 'streaming'] || 0) + initialEarnings
         }
       };
 
     case 'ANNOUNCE_RELEASE':
       const { releaseId } = action.payload;
-      const baseReach = Math.floor(state.player.fans * 0.4 + state.player.socialMedia.rapgram.followers * 0.3);
+      const release = state.releases.find(r => r.id === releaseId);
+      
+      if (!release) return state;
+      
+      const baseReach = Math.floor(
+        (state.player.fans || 0) * 0.4 + 
+        (state.player.socialMedia?.rapgram?.followers || 0) * 0.3
+      );
       const announcementViews = Math.floor(baseReach * (0.5 + Math.random() * 0.8));
       const announcementEarnings = announcementViews * 0.12;
-      const release = state.releases.find(r => r.id === releaseId);
 
       const announcementPost = {
         id: Date.now(),
@@ -277,16 +318,16 @@ function gameReducer(state, action) {
 
       return {
         ...state,
-        releases: state.releases.map(rel =>
-          rel.id === releaseId
+        releases: state.releases.map(rel => 
+          rel.id === releaseId 
             ? {
                 ...rel,
                 announced: true,
                 views: rel.views + announcementViews,
                 earnings: rel.earnings + announcementEarnings,
-                weeklyViews: rel.weeklyViews + announcementViews,
-                dailyViews: rel.dailyViews + Math.floor(announcementViews * 0.3),
-                peakWeeklyViews: Math.max(rel.peakWeeklyViews, rel.weeklyViews + announcementViews)
+                weeklyViews: (rel.weeklyViews || 0) + announcementViews,
+                dailyViews: (rel.dailyViews || 0) + Math.floor(announcementViews * 0.3),
+                peakWeeklyViews: Math.max(rel.peakWeeklyViews || 0, (rel.weeklyViews || 0) + announcementViews)
               }
             : rel
         ),
@@ -337,14 +378,14 @@ function gameReducer(state, action) {
 
       // Enhanced fan-based social media growth
       const fanGrowthMultiplier = Math.max(1, state.player.fans / 1000);
-      const viewsMultiplier = state.releases.reduce((sum, release) => sum + release.views, 0) / 10000;
+      const viewsMultiplier = state.releases.reduce((sum, release) => sum + (release.views || 0), 0) / 10000;
 
       // Enhanced views system with realistic decay and viral potential
       let weeklyEarnings = 0;
       let weeklyViews = 0;
 
       const updatedReleasesWeek = state.releases.map(release => {
-        if (release.views === 0) return release;
+        if (!release || (release.views || 0) === 0) return release;
 
         // Age factor - content gets less views over time
         const weeksOld = state.player.week - (release.releaseWeek || 0);
@@ -352,12 +393,12 @@ function gameReducer(state, action) {
 
         // Base views calculation with multiple factors
         const baseViews = Math.floor(Math.random() * 2000) + 500;
-        const qualityMultiplier = Math.max(0.3, release.quality / 10);
-        const fameMultiplier = Math.max(0.2, state.player.fame / 200);
-        const fanMultiplier = Math.max(0.1, state.player.fans / 3000);
+        const qualityMultiplier = Math.max(0.3, (release.quality || 5) / 10);
+        const fameMultiplier = Math.max(0.2, (state.player.fame || 0) / 200);
+        const fanMultiplier = Math.max(0.1, (state.player.fans || 0) / 3000);
 
         // Viral potential based on current performance
-        const viralChance = release.peakWeeklyViews > 50000 ? 0.15 : 0.05;
+        const viralChance = (release.peakWeeklyViews || 0) > 50000 ? 0.15 : 0.05;
         const isViralWeek = Math.random() < viralChance;
         const viralMultiplier = isViralWeek ? (2 + Math.random() * 3) : 1;
 
@@ -377,9 +418,9 @@ function gameReducer(state, action) {
         weeklyViews += weeklyViewGain;
 
         // Update view statistics
-        const newTotalViews = release.views + weeklyViewGain;
+        const newTotalViews = (release.views || 0) + weeklyViewGain;
         const newWeeklyViews = weeklyViewGain;
-        const newPeakWeekly = Math.max(release.peakWeeklyViews, newWeeklyViews);
+        const newPeakWeekly = Math.max(release.peakWeeklyViews || 0, newWeeklyViews);
 
         // Chart position calculation
         let chartPosition = release.chartPosition;
@@ -396,14 +437,18 @@ function gameReducer(state, action) {
         return {
           ...release,
           views: newTotalViews,
-          earnings: release.earnings + earnings,
+          earnings: (release.earnings || 0) + earnings,
           weeklyViews: newWeeklyViews,
           peakWeeklyViews: newPeakWeekly,
           dailyViews: Math.floor(newWeeklyViews / 7),
-          monthlyViews: release.monthlyViews ? release.monthlyViews + newWeeklyViews : newWeeklyViews,
+          monthlyViews: (release.monthlyViews || 0) + newWeeklyViews,
           viewsHistory: [
             ...(release.viewsHistory || []),
-            { week: state.player.week, views: newWeeklyViews, total: newTotalViews }
+            {
+              week: state.player.week,
+              views: newWeeklyViews,
+              total: newTotalViews
+            }
           ].slice(-12), // Keep last 12 weeks
           trending: trending,
           isViral: isViral,
@@ -412,7 +457,7 @@ function gameReducer(state, action) {
           releaseWeek: release.releaseWeek || state.player.week,
           // Performance metrics
           avgWeeklyViews: release.viewsHistory 
-            ? release.viewsHistory.reduce((sum, h) => sum + h.views, 0) / release.viewsHistory.length 
+            ? release.viewsHistory.reduce((sum, h) => sum + (h.views || 0), 0) / release.viewsHistory.length 
             : newWeeklyViews,
           growthRate: release.weeklyViews 
             ? ((newWeeklyViews - release.weeklyViews) / release.weeklyViews * 100) 
@@ -422,27 +467,44 @@ function gameReducer(state, action) {
 
       // Enhanced social media growth based on fans and content performance
       const totalReleaseViews = updatedReleasesWeek.reduce((sum, release) => sum + (release.weeklyViews || 0), 0);
-
+      
       const newSocialMedia = {
         ...state.player.socialMedia,
         rapgram: {
           ...state.player.socialMedia.rapgram,
-          followers: Math.floor(state.player.socialMedia.rapgram.followers + (state.player.fans * 0.6) + (fanGrowthMultiplier * 50) + (totalReleaseViews * 0.01))
+          followers: Math.floor(
+            state.player.socialMedia.rapgram.followers + 
+            (state.player.fans * 0.6) + 
+            (fanGrowthMultiplier * 50) + 
+            (totalReleaseViews * 0.01)
+          )
         },
         raptube: {
           ...state.player.socialMedia.raptube,
-          subscribers: Math.floor(state.player.socialMedia.raptube.subscribers + (state.player.fans * 0.4) + (viewsMultiplier * 20)),
+          subscribers: Math.floor(
+            state.player.socialMedia.raptube.subscribers + 
+            (state.player.fans * 0.4) + 
+            (viewsMultiplier * 20)
+          ),
           totalViews: state.player.socialMedia.raptube.totalViews + weeklyViews,
           videos: state.musicVideos.filter(v => v.released).length
         },
         rapify: {
           ...state.player.socialMedia.rapify,
-          listeners: Math.floor(state.player.socialMedia.rapify.listeners + (state.player.fans * 0.8) + (fanGrowthMultiplier * 100)),
+          listeners: Math.floor(
+            state.player.socialMedia.rapify.listeners + 
+            (state.player.fans * 0.8) + 
+            (fanGrowthMultiplier * 100)
+          ),
           streams: state.player.socialMedia.rapify.streams + Math.floor(weeklyViews * 1.2)
         },
         riktok: {
           ...state.player.socialMedia.riktok,
-          followers: Math.floor(state.player.socialMedia.riktok.followers + (state.player.fans * 0.7) + (fanGrowthMultiplier * 80))
+          followers: Math.floor(
+            state.player.socialMedia.riktok.followers + 
+            (state.player.fans * 0.7) + 
+            (fanGrowthMultiplier * 80)
+          )
         }
       };
 
@@ -457,7 +519,7 @@ function gameReducer(state, action) {
             id: Date.now() + Math.random(),
             type: 'success',
             title: 'VIRAL HIT! 🔥',
-            message: `"${release.title}" has gone viral with ${release.views.toLocaleString()} views!`,
+            message: `"${release.title}" has gone viral with ${(release.views || 0).toLocaleString()} views!`,
             timestamp: new Date().toISOString()
           });
           release.viralNotified = true;
@@ -517,7 +579,11 @@ function gameReducer(state, action) {
       };
 
       if (newStateWeek.slot) {
-        localStorage.setItem(`rapCareer_slot_${newStateWeek.slot}`, JSON.stringify(newStateWeek));
+        try {
+          localStorage.setItem(`rapCareer_slot_${newStateWeek.slot}`, JSON.stringify(newStateWeek));
+        } catch (error) {
+          console.error('Error saving game:', error);
+        }
       }
 
       return newStateWeek;
@@ -547,7 +613,7 @@ function gameReducer(state, action) {
         return 100;
       };
 
-      const cost = getUpgradeCost(state.player.skills[action.payload.skill]);
+      const cost = getUpgradeCost(state.player.skills[action.payload.skill] || 1);
 
       return {
         ...state,
@@ -556,7 +622,7 @@ function gameReducer(state, action) {
           energy: state.player.energy - cost,
           skills: {
             ...state.player.skills,
-            [action.payload.skill]: state.player.skills[action.payload.skill] + 1
+            [action.payload.skill]: (state.player.skills[action.payload.skill] || 1) + 1
           }
         }
       };
@@ -577,7 +643,12 @@ export function GameProvider({ children }) {
         ...state,
         lastPlayed: new Date().toISOString()
       };
-      localStorage.setItem(`rapCareer_slot_${state.slot}`, JSON.stringify(currentState));
+      
+      try {
+        localStorage.setItem(`rapCareer_slot_${state.slot}`, JSON.stringify(currentState));
+      } catch (error) {
+        console.error('Error auto-saving game:', error);
+      }
     }, 30000);
 
     return () => clearInterval(interval);

@@ -106,6 +106,7 @@ export default function MainMenu() {
       <div className="min-h-screen bg-dark-bg">
         <div className="max-w-mobile mx-auto px-4 py-8">
           <div className="h-8"></div>
+          
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <button
@@ -123,9 +124,7 @@ export default function MainMenu() {
             {savedCareers.map((career, index) => (
               <motion.div
                 key={career.slot}
-                className={`game-card p-4 shadow-dark ${
-                  career.empty ? 'border-2 border-dashed border-dark-border/50' : ''
-                }`}
+                className={`game-card p-4 shadow-dark ${career.empty ? 'border-2 border-dashed border-dark-border/50' : ''}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -154,6 +153,7 @@ export default function MainMenu() {
                         </p>
                       </div>
                     </div>
+
                     <div className="bg-dark-surface/50 p-3 rounded-game mb-3">
                       <div className="grid grid-cols-3 gap-2 text-center text-xs">
                         <div>
@@ -172,6 +172,7 @@ export default function MainMenu() {
                         </div>
                       </div>
                     </div>
+
                     <div className="flex space-x-2">
                       <button
                         onClick={() => loadCareer(career)}
@@ -217,6 +218,7 @@ export default function MainMenu() {
           <div className="w-16 h-16 bg-gradient-to-br from-neon-cyan to-neon-purple rounded-game-xl shadow-glow-xl flex items-center justify-center mb-4 animate-glow">
             <SafeIcon icon={FiMic} className="text-2xl text-white" />
           </div>
+
           <h1 className="text-3xl font-bold text-text-primary mb-2 neon-text">RapMaster</h1>
           <p className="text-base text-text-secondary mb-8">Build your rap empire</p>
 

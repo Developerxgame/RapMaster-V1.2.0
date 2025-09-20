@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import SafeIcon from '../../common/SafeIcon';
 import ShareModal from './ShareModal';
 import ShareButton from './ShareButton';
+import QuickActionMenu from './QuickActionMenu';
 import * as FiIcons from 'react-icons/fi';
 
 const { FiStar, FiUsers, FiTrendingUp, FiDollarSign, FiZap, FiCalendar, FiBriefcase, FiMusic, FiGlobe, FiEye, FiPlay, FiActivity, FiBarChart } = FiIcons;
@@ -102,30 +103,6 @@ export default function HomePage() {
     }
   ];
 
-  const quickActions = [
-    {
-      title: 'Find Work',
-      description: 'Earn money and gain experience',
-      icon: FiBriefcase,
-      color: 'bg-gradient-to-br from-cyan-400 to-blue-500',
-      action: () => navigate('/game/job')
-    },
-    {
-      title: 'Create Music',
-      description: 'Record your next hit track',
-      icon: FiMusic,
-      color: 'bg-gradient-to-br from-purple-400 to-pink-500',
-      action: () => navigate('/game/studio')
-    },
-    {
-      title: 'Social Media',
-      description: 'Connect with your fans',
-      icon: FiGlobe,
-      color: 'bg-gradient-to-br from-pink-400 to-red-500',
-      action: () => navigate('/game/social')
-    }
-  ];
-
   const topReleases = releases
     .sort((a, b) => b.views - a.views)
     .slice(0, 3);
@@ -150,7 +127,7 @@ export default function HomePage() {
   const recentMilestones = checkMilestones();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 pb-24 pt-16">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 pb-24 pt-16 relative">
       <div className="px-4 space-y-4 max-w-mobile mx-auto">
         {/* Welcome Section */}
         <motion.div
@@ -240,7 +217,11 @@ export default function HomePage() {
                   data: {
                     type: 'milestone',
                     achievement: `${formatNumber(totalViews)} Total Views`,
-                    stats: { fame: player.fame, fans: player.fans, netWorth: player.netWorth }
+                    stats: {
+                      fame: player.fame,
+                      fans: player.fans,
+                      netWorth: player.netWorth
+                    }
                   }
                 })}
                 size="small"
@@ -321,28 +302,6 @@ export default function HomePage() {
             </div>
           </motion.div>
         )}
-
-        {/* Quick Actions - Icon Only */}
-        <div>
-          <h2 className="text-base font-bold text-white mb-3">Quick Actions</h2>
-          <div className="flex justify-center space-x-4">
-            {quickActions.map((action, index) => (
-              <motion.button
-                key={action.title}
-                onClick={action.action}
-                className="p-4 rounded-2xl shadow-xl transition-all active:scale-95 hover:scale-105"
-                style={{ background: action.color }}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <SafeIcon icon={action.icon} className="text-2xl text-white" />
-              </motion.button>
-            ))}
-          </div>
-        </div>
 
         {/* Career Summary */}
         <div className="bg-white/10 backdrop-blur-md p-4 rounded-3xl border border-white/20 shadow-2xl">
@@ -428,7 +387,11 @@ export default function HomePage() {
                           data: {
                             type: 'release',
                             title: release.title,
-                            stats: { fame: player.fame, fans: player.fans, netWorth: player.netWorth }
+                            stats: {
+                              fame: player.fame,
+                              fans: player.fans,
+                              netWorth: player.netWorth
+                            }
                           }
                         })}
                         className="text-xs bg-red-400/20 text-red-400 px-1 py-0.5 rounded mt-1 hover:bg-red-400/30 transition-colors"
@@ -463,6 +426,9 @@ export default function HomePage() {
           shareData={shareModal.data}
         />
       </div>
+
+      {/* Quick Action Menu */}
+      <QuickActionMenu />
     </div>
   );
 }

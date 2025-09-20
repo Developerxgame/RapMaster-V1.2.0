@@ -92,7 +92,7 @@ export default function SplashScreen() {
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <div className="w-24 h-24 bg-gradient-to-br from-neon-yellow to-neon-orange rounded-game-xl shadow-glow-xl flex items-center justify-center mb-6 animate-glow">
+              <div className="w-24 h-24 bg-gradient-to-br from-neon-cyan to-neon-purple rounded-game-xl shadow-glow-xl flex items-center justify-center mb-6 animate-glow">
                 <SafeIcon icon={FiMic} className="text-4xl text-white" />
               </div>
             </motion.div>
