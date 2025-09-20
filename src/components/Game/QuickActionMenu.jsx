@@ -5,22 +5,14 @@ import { useGame } from '../../context/GameContext';
 import SafeIcon from '../../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 
-const { FiPlus, FiX, FiTarget, FiAward, FiBarChart, FiMusic, FiVideo, FiDisc, FiMic, FiUsers, FiTrendingUp, FiUpload, FiBookOpen } = FiIcons;
+const { FiPlus, FiX, FiTarget, FiAward, FiBarChart, FiMic, FiUsers, FiUpload } = FiIcons;
 
 export default function QuickActionMenu() {
   const navigate = useNavigate();
-  const { state, dispatch } = useGame();
+  const { state } = useGame();
   const [isOpen, setIsOpen] = useState(false);
 
   const quickActions = [
-    {
-      id: 'get-started',
-      title: 'Get Started',
-      description: 'Quest tutorial',
-      icon: FiBookOpen,
-      color: 'bg-gradient-to-br from-cyan-400 to-blue-500',
-      action: () => navigate('/game/get-started')
-    },
     {
       id: 'skills',
       title: 'Skills',
@@ -86,18 +78,15 @@ export default function QuickActionMenu() {
       <motion.button
         onClick={toggleMenu}
         className={`fixed bottom-28 right-6 w-14 h-14 rounded-2xl shadow-2xl z-40 flex items-center justify-center transition-all duration-300 ${
-          isOpen 
-            ? 'bg-gradient-to-br from-red-500 to-pink-500 rotate-45' 
+          isOpen
+            ? 'bg-gradient-to-br from-red-500 to-pink-500 rotate-45'
             : 'bg-gradient-to-br from-cyan-400 to-purple-500'
         }`}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         animate={{ rotate: isOpen ? 45 : 0 }}
       >
-        <SafeIcon 
-          icon={isOpen ? FiX : FiPlus} 
-          className="text-2xl text-white" 
-        />
+        <SafeIcon icon={isOpen ? FiX : FiPlus} className="text-2xl text-white" />
       </motion.button>
 
       {/* Backdrop */}
@@ -130,7 +119,7 @@ export default function QuickActionMenu() {
                 <p className="text-gray-300 text-xs">Tap any action to access</p>
               </div>
 
-              {/* Action Grid - Responsive 2x4 layout for 7 items */}
+              {/* Action Grid - Responsive 2x3 layout for 6 items */}
               <div className="grid grid-cols-2 gap-3">
                 {quickActions.map((action, index) => (
                   <motion.button

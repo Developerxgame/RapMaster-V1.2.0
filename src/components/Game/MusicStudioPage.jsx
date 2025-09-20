@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import SafeIcon from '../../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 
-const { FiMusic, FiDisc, FiVideo, FiZap, FiStar, FiPlay, FiPlus, FiUpload, FiTrendingUp, FiDollarSign, FiMegaphone, FiRefreshCw, FiEdit3, FiCheck } = FiIcons;
+const { FiMusic, FiDisc, FiVideo, FiZap, FiStar, FiPlay, FiUpload, FiRefreshCw, FiEdit3, FiCheck } = FiIcons;
 
 export default function MusicStudioPage() {
   const { state, dispatch } = useGame();
@@ -12,7 +12,6 @@ export default function MusicStudioPage() {
   const [activeTab, setActiveTab] = useState('create');
   const [isReleasing, setIsReleasing] = useState(false);
   const [releasingContentId, setReleasingContentId] = useState(null);
-  const [releasedContent, setReleasedContent] = useState(new Set()); // Track what's been released
 
   // Track creation states
   const [trackTitle, setTrackTitle] = useState('');
@@ -359,9 +358,9 @@ export default function MusicStudioPage() {
     setSelectedVideoStudio(null);
   };
 
-  // Enhanced releaseContent function with proper loading state and success feedback
+  // Enhanced releaseContent function with proper state management
   const releaseContent = async (content) => {
-    if (isReleasing || releasingContentId === content.id || releasedContent.has(content.id)) return;
+    if (isReleasing || releasingContentId === content.id || content.released) return;
 
     setIsReleasing(true);
     setReleasingContentId(content.id);
@@ -371,7 +370,7 @@ export default function MusicStudioPage() {
 
     try {
       // Simulate release process with delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       dispatch({
         type: 'RELEASE_CONTENT',
@@ -383,9 +382,6 @@ export default function MusicStudioPage() {
           platform: platform
         }
       });
-
-      // Mark as released in local state
-      setReleasedContent(prev => new Set([...prev, content.id]));
 
       dispatch({
         type: 'ADD_NOTIFICATION',
@@ -469,7 +465,7 @@ export default function MusicStudioPage() {
 
   // Check if content is already released
   const isContentReleased = (content) => {
-    return content.released || releasedContent.has(content.id) || releases.some(r => r.contentId === content.id);
+    return content.released || releases.some(r => r.contentId === content.id);
   };
 
   return (
@@ -1263,7 +1259,7 @@ export default function MusicStudioPage() {
                         className="w-full game-button hover-glow text-sm"
                       >
                         <div className="flex items-center justify-center space-x-2">
-                          <SafeIcon icon={FiMegaphone} />
+                          <SafeIcon icon={FiUpload} />
                           <span>Announce on RapGram & RikTok</span>
                         </div>
                       </button>
@@ -1335,7 +1331,7 @@ export default function MusicStudioPage() {
                           {isReleasing && releasingContentId === track.id ? (
                             <div className="flex items-center justify-center space-x-2">
                               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                              <span>Releasing on Rapify...</span>
+                              <span>Releasing...</span>
                             </div>
                           ) : (
                             <div className="flex items-center justify-center space-x-2">
@@ -1402,7 +1398,7 @@ export default function MusicStudioPage() {
                           {isReleasing && releasingContentId === album.id ? (
                             <div className="flex items-center justify-center space-x-2">
                               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                              <span>Releasing on Rapify...</span>
+                              <span>Releasing...</span>
                             </div>
                           ) : (
                             <div className="flex items-center justify-center space-x-2">
@@ -1469,7 +1465,7 @@ export default function MusicStudioPage() {
                           {isReleasing && releasingContentId === video.id ? (
                             <div className="flex items-center justify-center space-x-2">
                               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                              <span>Releasing on RapTube...</span>
+                              <span>Releasing...</span>
                             </div>
                           ) : (
                             <div className="flex items-center justify-center space-x-2">

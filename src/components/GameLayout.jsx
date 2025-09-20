@@ -16,7 +16,6 @@ import ConcertsPage from './Game/ConcertsPage';
 import AwardsPage from './Game/AwardsPage';
 import CollaborationsPage from './Game/CollaborationsPage';
 import ReleasePage from './Game/ReleasePage';
-import GetStartedPage from './Quest/GetStartedPage';
 
 export default function GameLayout() {
   const { state } = useGame();
@@ -49,7 +48,6 @@ export default function GameLayout() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white flex flex-col">
       <Header />
-      
       <main className="flex-1 pb-20 pt-12">
         <Routes>
           <Route path="/home" element={<HomePage />} />
@@ -63,20 +61,14 @@ export default function GameLayout() {
           <Route path="/awards" element={<AwardsPage />} />
           <Route path="/collaborations" element={<CollaborationsPage />} />
           <Route path="/releases" element={<ReleasePage />} />
-          <Route path="/get-started" element={<GetStartedPage />} />
         </Routes>
       </main>
-
       <BottomNav />
 
       {/* Level Up Modal */}
       <LevelUpModal
         isOpen={levelUpModal.isOpen}
-        onClose={() => setLevelUpModal({
-          isOpen: false,
-          newLevel: null,
-          previousLevel: null
-        })}
+        onClose={() => setLevelUpModal({ isOpen: false, newLevel: null, previousLevel: null })}
         newLevel={levelUpModal.newLevel}
         previousLevel={levelUpModal.previousLevel}
       />
