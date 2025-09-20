@@ -37,9 +37,14 @@ export default function MusicStudioPage() {
     { id: 'tracks', label: 'My Content', icon: FiPlay }
   ];
 
+  // Safe player name function
+  const getSafePlayerName = () => {
+    return player?.stageName || 'You';
+  };
+
   // Lyrics options - Artist name first, then others
   const lyricsOptions = [
-    { id: 1, name: `${player.stageName || 'You'}`, price: 0, quality: 3, description: 'Write your own lyrics' },
+    { id: 1, name: getSafePlayerName(), price: 0, quality: 3, description: 'Write your own lyrics' },
     { id: 2, name: 'Local Songwriter', price: 1000, quality: 5, description: 'Professional songwriter' },
     { id: 3, name: 'Hit Songwriter', price: 5000, quality: 7, description: 'Chart-topping writer' },
     { id: 4, name: 'Grammy Winner', price: 25000, quality: 9, description: 'Award-winning lyricist' },
@@ -48,7 +53,7 @@ export default function MusicStudioPage() {
 
   // Producers - Artist name first, then others
   const producers = [
-    { id: 1, name: `${player.stageName || 'You'}`, price: 0, quality: 3, description: 'Produce your own beats' },
+    { id: 1, name: getSafePlayerName(), price: 0, quality: 3, description: 'Produce your own beats' },
     { id: 2, name: 'Local Producer', price: 5000, quality: 5, description: 'Professional local talent' },
     { id: 3, name: 'Known Producer', price: 25000, quality: 7, description: 'Industry recognized' },
     { id: 4, name: 'Top Producer', price: 100000, quality: 9, description: 'Chart-topping beats' },
@@ -57,7 +62,7 @@ export default function MusicStudioPage() {
 
   // Directors - Artist name first, then others
   const directors = [
-    { id: 1, name: `${player.stageName || 'You'}`, price: 0, quality: 3, description: 'Direct yourself' },
+    { id: 1, name: getSafePlayerName(), price: 0, quality: 3, description: 'Direct yourself' },
     { id: 2, name: 'Music Director', price: 10000, quality: 5, description: 'Professional direction' },
     { id: 3, name: 'Creative Director', price: 50000, quality: 7, description: 'Creative vision' },
     { id: 4, name: 'Award Director', price: 200000, quality: 9, description: 'Award-winning direction' },
@@ -75,7 +80,7 @@ export default function MusicStudioPage() {
 
   // Video-specific options - Artist name first, then others
   const videoProducers = [
-    { id: 1, name: `${player.stageName || 'You'}`, price: 0, quality: 3, description: 'Self-produced video' },
+    { id: 1, name: getSafePlayerName(), price: 0, quality: 3, description: 'Self-produced video' },
     { id: 2, name: 'Video Producer', price: 25000, quality: 5, description: 'Professional video' },
     { id: 3, name: 'Commercial Producer', price: 100000, quality: 7, description: 'Commercial quality' },
     { id: 4, name: 'Music Video Pro', price: 500000, quality: 9, description: 'Top-tier video production' },
@@ -83,7 +88,7 @@ export default function MusicStudioPage() {
   ];
 
   const videoDirectors = [
-    { id: 1, name: `${player.stageName || 'You'}`, price: 0, quality: 3, description: 'Self-directed video' },
+    { id: 1, name: getSafePlayerName(), price: 0, quality: 3, description: 'Self-directed video' },
     { id: 2, name: 'Video Director', price: 25000, quality: 5, description: 'Professional direction' },
     { id: 3, name: 'Creative Director', price: 100000, quality: 7, description: 'Artistic vision' },
     { id: 4, name: 'Award Director', price: 500000, quality: 9, description: 'Award-winning videos' },
@@ -115,10 +120,12 @@ export default function MusicStudioPage() {
 
   // Check for duplicate titles
   const isDuplicateTitle = (title, type = 'track') => {
+    if (!title || title.trim() === '') return false;
+    
     if (type === 'track') {
-      return tracks.some(track => track.title && track.title.toLowerCase() === title.toLowerCase());
+      return tracks.some(track => track && track.title && track.title.toLowerCase() === title.toLowerCase());
     } else if (type === 'album') {
-      return albums.some(album => album.title && album.title.toLowerCase() === title.toLowerCase());
+      return albums.some(album => album && album.title && album.title.toLowerCase() === title.toLowerCase());
     }
     return false;
   };
@@ -164,7 +171,7 @@ export default function MusicStudioPage() {
 
   const toggleLyricsName = () => {
     if (selectedLyrics && selectedLyrics.id === 1) {
-      const newName = selectedLyrics.name === player.stageName ? 'Anonymous' : player.stageName;
+      const newName = selectedLyrics.name === getSafePlayerName() ? 'Anonymous' : getSafePlayerName();
       setSelectedLyrics({ ...selectedLyrics, name: newName });
     }
   };
@@ -195,11 +202,11 @@ export default function MusicStudioPage() {
 
     const newTrack = {
       id: Date.now(),
-      title: trackTitle,
-      lyrics: selectedLyrics.name,
-      producer: selectedProducer.name,
-      director: selectedDirector.name,
-      studio: selectedStudio.name,
+      title: trackTitle || 'Untitled Track',
+      lyrics: selectedLyrics.name || 'Unknown',
+      producer: selectedProducer.name || 'Unknown',
+      director: selectedDirector.name || 'Unknown',
+      studio: selectedStudio.name || 'Unknown',
       quality: totalQuality,
       createdAt: `${player.week}/${player.year}`,
       released: false,
@@ -257,13 +264,13 @@ export default function MusicStudioPage() {
     }
 
     const averageQuality = selectedTracks.reduce((sum, trackId) => {
-      const track = tracks.find(t => t.id === trackId);
+      const track = tracks.find(t => t && t.id === trackId);
       return sum + (track?.quality || 0);
     }, 0) / selectedTracks.length;
 
     const newAlbum = {
       id: Date.now(),
-      title: albumTitle,
+      title: albumTitle || 'Untitled Album',
       tracks: selectedTracks,
       quality: Math.floor(averageQuality),
       createdAt: `${player.week}/${player.year}`,
@@ -304,22 +311,22 @@ export default function MusicStudioPage() {
     const totalCost = selectedVideoProducer.price + selectedVideoDirector.price + selectedVideoStudio.price;
     if (player.netWorth < totalCost) return;
 
-    const track = tracks.find(t => t.id === selectedTrack);
+    const track = tracks.find(t => t && t.id === selectedTrack);
     const baseQuality = Math.floor((selectedVideoProducer.quality + selectedVideoDirector.quality + selectedVideoStudio.quality) / 3);
     const trackQualityBonus = Math.floor((track?.quality || 0) / 3);
     const charismaBonus = Math.floor((player.skills?.charisma || 1) / 20);
     const videoQuality = Math.min(10, baseQuality + trackQualityBonus + charismaBonus);
 
-    const videoTitle = `${track?.title || 'Unknown'} - Official Music Video | ${player.stageName}`;
+    const videoTitle = `${track?.title || 'Unknown'} - Official Music Video | ${getSafePlayerName()}`;
 
     const newVideo = {
       id: Date.now(),
       title: videoTitle,
       trackId: selectedTrack,
       trackTitle: track?.title || 'Unknown',
-      producer: selectedVideoProducer.name,
-      director: selectedVideoDirector.name,
-      studio: selectedVideoStudio.name,
+      producer: selectedVideoProducer.name || 'Unknown',
+      director: selectedVideoDirector.name || 'Unknown',
+      studio: selectedVideoStudio.name || 'Unknown',
       quality: videoQuality,
       createdAt: `${player.week}/${player.year}`,
       released: false,
@@ -358,9 +365,12 @@ export default function MusicStudioPage() {
     setSelectedVideoStudio(null);
   };
 
-  // Enhanced releaseContent function with proper state management
+  // Enhanced releaseContent function with proper state management and error handling
   const releaseContent = async (content) => {
-    if (isReleasing || releasingContentId === content.id || content.released) return;
+    if (!content || !content.id || isReleasing || releasingContentId === content.id || content.released) {
+      console.warn('Cannot release content:', { content, isReleasing, releasingContentId });
+      return;
+    }
 
     setIsReleasing(true);
     setReleasingContentId(content.id);
@@ -372,15 +382,18 @@ export default function MusicStudioPage() {
       // Simulate release process with delay
       await new Promise(resolve => setTimeout(resolve, 1000));
 
+      // Validate content before releasing
+      const safeContent = {
+        contentId: content.id,
+        type: content.type || 'track',
+        title: content.title || 'Untitled',
+        quality: Math.max(1, Math.min(10, content.quality || 5)),
+        platform: platform
+      };
+
       dispatch({
         type: 'RELEASE_CONTENT',
-        payload: {
-          contentId: content.id,
-          type: content.type,
-          title: content.title,
-          quality: content.quality || 5,
-          platform: platform
-        }
+        payload: safeContent
       });
 
       dispatch({
@@ -389,7 +402,7 @@ export default function MusicStudioPage() {
           id: Date.now(),
           type: 'success',
           title: `Released on ${platform}!`,
-          message: `"${content.title}" is now live on ${platform} and earning views!`,
+          message: `"${safeContent.title}" is now live on ${platform} and earning views!`,
           timestamp: new Date().toISOString()
         }
       });
@@ -413,9 +426,11 @@ export default function MusicStudioPage() {
   };
 
   const announceRelease = (releaseId) => {
+    if (!releaseId) return;
+    
     try {
       dispatch({ type: 'ANNOUNCE_RELEASE', payload: { releaseId } });
-      const release = releases.find(r => r.id === releaseId);
+      const release = releases.find(r => r && r.id === releaseId);
       dispatch({
         type: 'ADD_NOTIFICATION',
         payload: {
@@ -433,11 +448,11 @@ export default function MusicStudioPage() {
 
   const canCreateTrack = () => {
     const totalCost = (selectedLyrics?.price || 0) + (selectedProducer?.price || 0) + (selectedDirector?.price || 0) + (selectedStudio?.price || 0);
-    return trackTitle && selectedLyrics && selectedProducer && selectedDirector && selectedStudio && player.energy >= 20 && player.netWorth >= totalCost && !isDuplicateTitle(trackTitle);
+    return trackTitle && trackTitle.trim() !== '' && selectedLyrics && selectedProducer && selectedDirector && selectedStudio && player.energy >= 20 && player.netWorth >= totalCost && !isDuplicateTitle(trackTitle);
   };
 
   const canCreateAlbum = () => {
-    return albumTitle && selectedTracks.length >= 3 && player.energy >= 40 && !isDuplicateTitle(albumTitle, 'album');
+    return albumTitle && albumTitle.trim() !== '' && selectedTracks.length >= 3 && player.energy >= 40 && !isDuplicateTitle(albumTitle, 'album');
   };
 
   const canCreateVideo = () => {
@@ -445,13 +460,13 @@ export default function MusicStudioPage() {
     return selectedTrack && selectedVideoProducer && selectedVideoDirector && selectedVideoStudio && player.energy >= 30 && player.netWorth >= totalCost;
   };
 
-  // Get tracks available for albums (not released and not in album)
-  const availableTracksForAlbum = tracks.filter(track => track && !track.released && !track.inAlbum);
+  // Get tracks available for albums (not released and not in album) with null checks
+  const availableTracksForAlbum = tracks.filter(track => track && track.id && !track.released && !track.inAlbum);
 
-  // Get tracks available for music videos (not having a video already)
-  const availableTracksForVideo = tracks.filter(track => track && !track.hasVideo);
+  // Get tracks available for music videos (not having a video already) with null checks
+  const availableTracksForVideo = tracks.filter(track => track && track.id && !track.hasVideo);
 
-  const releasedContentList = releases.filter(release => release && !release.announced);
+  const releasedContentList = releases.filter(release => release && release.id && !release.announced);
 
   const formatPrice = (price) => {
     if (price === 0) return 'FREE';
@@ -463,9 +478,15 @@ export default function MusicStudioPage() {
     return `$${price}`;
   };
 
-  // Check if content is already released
+  // Check if content is already released with proper null checks
   const isContentReleased = (content) => {
-    return content.released || releases.some(r => r.contentId === content.id);
+    if (!content || !content.id) return false;
+    return content.released || releases.some(r => r && r.contentId === content.id);
+  };
+
+  // Safe display functions
+  const safeDisplayText = (text, fallback = 'Unknown') => {
+    return text && text.trim() !== '' ? text : fallback;
   };
 
   return (
@@ -593,7 +614,7 @@ export default function MusicStudioPage() {
                       <div className="flex justify-between items-center">
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
-                            <span className="font-semibold text-sm">{lyrics.name}</span>
+                            <span className="font-semibold text-sm">{safeDisplayText(lyrics.name)}</span>
                             {lyrics.id === 1 && isSelected && (
                               <button
                                 onClick={(e) => {
@@ -606,7 +627,7 @@ export default function MusicStudioPage() {
                               </button>
                             )}
                           </div>
-                          <div className="text-xs opacity-80 mb-1">{lyrics.description}</div>
+                          <div className="text-xs opacity-80 mb-1">{safeDisplayText(lyrics.description)}</div>
                           <div className="flex items-center space-x-1">
                             {[...Array(5)].map((_, i) => (
                               <SafeIcon
@@ -659,8 +680,8 @@ export default function MusicStudioPage() {
                     >
                       <div className="flex justify-between items-center">
                         <div>
-                          <div className="font-semibold text-sm">{producer.name}</div>
-                          <div className="text-xs opacity-80 mb-1">{producer.description}</div>
+                          <div className="font-semibold text-sm">{safeDisplayText(producer.name)}</div>
+                          <div className="text-xs opacity-80 mb-1">{safeDisplayText(producer.description)}</div>
                           <div className="flex items-center space-x-1">
                             {[...Array(5)].map((_, i) => (
                               <SafeIcon
@@ -713,8 +734,8 @@ export default function MusicStudioPage() {
                     >
                       <div className="flex justify-between items-center">
                         <div>
-                          <div className="font-semibold text-sm">{director.name}</div>
-                          <div className="text-xs opacity-80 mb-1">{director.description}</div>
+                          <div className="font-semibold text-sm">{safeDisplayText(director.name)}</div>
+                          <div className="text-xs opacity-80 mb-1">{safeDisplayText(director.description)}</div>
                           <div className="flex items-center space-x-1">
                             {[...Array(5)].map((_, i) => (
                               <SafeIcon
@@ -767,8 +788,8 @@ export default function MusicStudioPage() {
                     >
                       <div className="flex justify-between items-center">
                         <div>
-                          <div className="font-semibold text-sm">{studio.name}</div>
-                          <div className="text-xs opacity-80 mb-1">{studio.description}</div>
+                          <div className="font-semibold text-sm">{safeDisplayText(studio.name)}</div>
+                          <div className="text-xs opacity-80 mb-1">{safeDisplayText(studio.description)}</div>
                           <div className="flex items-center space-x-1">
                             {[...Array(5)].map((_, i) => (
                               <SafeIcon
@@ -806,25 +827,25 @@ export default function MusicStudioPage() {
                 <div className="space-y-2 text-sm">
                   {selectedLyrics && (
                     <div className="flex justify-between">
-                      <span className="text-text-secondary">Lyrics ({selectedLyrics.name})</span>
+                      <span className="text-text-secondary">Lyrics ({safeDisplayText(selectedLyrics.name)})</span>
                       <span className="font-medium text-text-primary">{formatPrice(selectedLyrics.price)}</span>
                     </div>
                   )}
                   {selectedProducer && (
                     <div className="flex justify-between">
-                      <span className="text-text-secondary">Producer ({selectedProducer.name})</span>
+                      <span className="text-text-secondary">Producer ({safeDisplayText(selectedProducer.name)})</span>
                       <span className="font-medium text-text-primary">{formatPrice(selectedProducer.price)}</span>
                     </div>
                   )}
                   {selectedDirector && (
                     <div className="flex justify-between">
-                      <span className="text-text-secondary">Direction ({selectedDirector.name})</span>
+                      <span className="text-text-secondary">Direction ({safeDisplayText(selectedDirector.name)})</span>
                       <span className="font-medium text-text-primary">{formatPrice(selectedDirector.price)}</span>
                     </div>
                   )}
                   {selectedStudio && (
                     <div className="flex justify-between">
-                      <span className="text-text-secondary">Studio ({selectedStudio.name})</span>
+                      <span className="text-text-secondary">Studio ({safeDisplayText(selectedStudio.name)})</span>
                       <span className="font-medium text-text-primary">{formatPrice(selectedStudio.price)}</span>
                     </div>
                   )}
@@ -932,8 +953,8 @@ export default function MusicStudioPage() {
                       >
                         <div className="flex justify-between items-center">
                           <div>
-                            <span className="font-medium text-sm">{track.title}</span>
-                            <div className="text-xs opacity-80">Producer: {track.producer}</div>
+                            <span className="font-medium text-sm">{safeDisplayText(track.title)}</span>
+                            <div className="text-xs opacity-80">Producer: {safeDisplayText(track.producer)}</div>
                           </div>
                           <div className="flex items-center space-x-1">
                             {[...Array(5)].map((_, i) => (
@@ -941,7 +962,7 @@ export default function MusicStudioPage() {
                                 key={i}
                                 icon={FiStar}
                                 className={`text-xs ${
-                                  i < track.quality
+                                  i < (track.quality || 0)
                                     ? selectedTracks.includes(track.id) ? 'text-white' : 'text-neon-orange'
                                     : 'text-text-disabled'
                                 }`}
@@ -1015,9 +1036,9 @@ export default function MusicStudioPage() {
                       >
                         <div className="flex justify-between items-center">
                           <div>
-                            <span className="font-medium text-sm">{track.title}</span>
+                            <span className="font-medium text-sm">{safeDisplayText(track.title)}</span>
                             <div className="text-xs opacity-80">
-                              Producer: {track.producer} • Quality: {track.quality}/10
+                              Producer: {safeDisplayText(track.producer)} • Quality: {track.quality || 0}/10
                             </div>
                           </div>
                           <div className="flex items-center space-x-1">
@@ -1026,7 +1047,7 @@ export default function MusicStudioPage() {
                                 key={i}
                                 icon={FiStar}
                                 className={`text-xs ${
-                                  i < track.quality
+                                  i < (track.quality || 0)
                                     ? selectedTrack === track.id ? 'text-white' : 'text-neon-orange'
                                     : 'text-text-disabled'
                                 }`}
@@ -1066,8 +1087,8 @@ export default function MusicStudioPage() {
                         >
                           <div className="flex justify-between items-center">
                             <div>
-                              <div className="font-semibold text-sm">{producer.name}</div>
-                              <div className="text-xs opacity-80">{producer.description}</div>
+                              <div className="font-semibold text-sm">{safeDisplayText(producer.name)}</div>
+                              <div className="text-xs opacity-80">{safeDisplayText(producer.description)}</div>
                             </div>
                             <div className="text-right">
                               <div className={`font-bold text-sm ${
@@ -1107,8 +1128,8 @@ export default function MusicStudioPage() {
                         >
                           <div className="flex justify-between items-center">
                             <div>
-                              <div className="font-semibold text-sm">{director.name}</div>
-                              <div className="text-xs opacity-80">{director.description}</div>
+                              <div className="font-semibold text-sm">{safeDisplayText(director.name)}</div>
+                              <div className="text-xs opacity-80">{safeDisplayText(director.description)}</div>
                             </div>
                             <div className="text-right">
                               <div className={`font-bold text-sm ${
@@ -1148,8 +1169,8 @@ export default function MusicStudioPage() {
                         >
                           <div className="flex justify-between items-center">
                             <div>
-                              <div className="font-semibold text-sm">{studio.name}</div>
-                              <div className="text-xs opacity-80">{studio.description}</div>
+                              <div className="font-semibold text-sm">{safeDisplayText(studio.name)}</div>
+                              <div className="text-xs opacity-80">{safeDisplayText(studio.description)}</div>
                             </div>
                             <div className="text-right">
                               <div className={`font-bold text-sm ${
@@ -1241,15 +1262,15 @@ export default function MusicStudioPage() {
                     <div key={release.id} className="game-card p-4 shadow-dark">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex-1">
-                          <h4 className="font-bold text-text-primary text-sm">{release.title}</h4>
+                          <h4 className="font-bold text-text-primary text-sm">{safeDisplayText(release.title)}</h4>
                           <div className="text-xs text-text-muted">
                             {release.type === 'video' ? 'Released on RapTube' : 'Released on Rapify'}
                           </div>
-                          <p className="text-xs text-text-muted">Released: {release.releaseDate}</p>
+                          <p className="text-xs text-text-muted">Released: {safeDisplayText(release.releaseDate)}</p>
                         </div>
                         <div className="text-right">
                           <div className="text-base font-bold text-neon-cyan animate-neon">
-                            {(release.views || 0).toLocaleString()} views
+                            {((release.views || 0)).toLocaleString()} views
                           </div>
                           <div className="text-xs text-neon-green">${Math.floor(release.earnings || 0)} earned</div>
                         </div>
@@ -1274,84 +1295,88 @@ export default function MusicStudioPage() {
               <div>
                 <h3 className="text-base font-bold text-text-primary mb-3">Tracks ({tracks.length})</h3>
                 <div className="space-y-3">
-                  {tracks.map((track) => (
-                    <div key={track.id} className="game-card p-4 shadow-dark">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex-1">
-                          <h4 className="font-bold text-text-primary text-sm">{track.title}</h4>
-                          <div className="text-xs text-text-muted">
-                            <div>Lyrics: {track.lyrics} • Producer: {track.producer}</div>
-                            <div>Director: {track.director} • Studio: {track.studio}</div>
+                  {tracks.map((track) => {
+                    if (!track || !track.id) return null;
+                    
+                    return (
+                      <div key={track.id} className="game-card p-4 shadow-dark">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex-1">
+                            <h4 className="font-bold text-text-primary text-sm">{safeDisplayText(track.title)}</h4>
+                            <div className="text-xs text-text-muted">
+                              <div>Lyrics: {safeDisplayText(track.lyrics)} • Producer: {safeDisplayText(track.producer)}</div>
+                              <div>Director: {safeDisplayText(track.director)} • Studio: {safeDisplayText(track.studio)}</div>
+                            </div>
+                            <p className="text-xs text-text-muted">Created: {safeDisplayText(track.createdAt)}</p>
+                            <div className="flex items-center space-x-2 mt-1">
+                              {track.inAlbum && (
+                                <span className="text-xs bg-neon-purple/10 text-neon-purple px-2 py-1 rounded-full border border-neon-purple/30">
+                                  In Album
+                                </span>
+                              )}
+                              {track.hasVideo && (
+                                <span className="text-xs bg-neon-red/10 text-neon-red px-2 py-1 rounded-full border border-neon-red/30">
+                                  Has Video
+                                </span>
+                              )}
+                              {isContentReleased(track) && (
+                                <span className="text-xs bg-neon-green/10 text-neon-green px-2 py-1 rounded-full border border-neon-green/30">
+                                  Released
+                                </span>
+                              )}
+                            </div>
                           </div>
-                          <p className="text-xs text-text-muted">Created: {track.createdAt}</p>
-                          <div className="flex items-center space-x-2 mt-1">
-                            {track.inAlbum && (
-                              <span className="text-xs bg-neon-purple/10 text-neon-purple px-2 py-1 rounded-full border border-neon-purple/30">
-                                In Album
-                              </span>
-                            )}
-                            {track.hasVideo && (
-                              <span className="text-xs bg-neon-red/10 text-neon-red px-2 py-1 rounded-full border border-neon-red/30">
-                                Has Video
-                              </span>
-                            )}
-                            {isContentReleased(track) && (
-                              <span className="text-xs bg-neon-green/10 text-neon-green px-2 py-1 rounded-full border border-neon-green/30">
-                                Released
-                              </span>
-                            )}
+                          <div className="text-right">
+                            <div className="flex items-center space-x-1 mb-1">
+                              {[...Array(5)].map((_, i) => (
+                                <SafeIcon
+                                  key={i}
+                                  icon={FiStar}
+                                  className={`text-xs ${
+                                    i < (track.quality || 0) ? 'text-neon-orange' : 'text-text-disabled'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <div className="text-xs text-text-muted">Quality: {track.quality || 0}/10</div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="flex items-center space-x-1 mb-1">
-                            {[...Array(5)].map((_, i) => (
-                              <SafeIcon
-                                key={i}
-                                icon={FiStar}
-                                className={`text-xs ${
-                                  i < track.quality ? 'text-neon-orange' : 'text-text-disabled'
-                                }`}
-                              />
-                            ))}
-                          </div>
-                          <div className="text-xs text-text-muted">Quality: {track.quality}/10</div>
-                        </div>
-                      </div>
 
-                      {!isContentReleased(track) && !track.inAlbum ? (
-                        <button
-                          onClick={() => releaseContent(track)}
-                          disabled={isReleasing && releasingContentId === track.id}
-                          className={`w-full text-sm font-semibold py-3 px-4 rounded-game transition-all ${
-                            isReleasing && releasingContentId === track.id
-                              ? 'bg-dark-surface/50 text-text-disabled cursor-not-allowed'
-                              : 'game-button hover-glow'
-                          }`}
-                        >
-                          {isReleasing && releasingContentId === track.id ? (
-                            <div className="flex items-center justify-center space-x-2">
-                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                              <span>Releasing...</span>
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-center space-x-2">
-                              <SafeIcon icon={FiUpload} />
-                              <span>Release on Rapify</span>
-                            </div>
-                          )}
-                        </button>
-                      ) : track.inAlbum ? (
-                        <div className="text-center py-2 text-neon-purple font-semibold text-sm">
-                          📀 Part of Album (Cannot be released separately)
-                        </div>
-                      ) : (
-                        <div className="text-center py-2 text-neon-green font-semibold text-sm flex items-center justify-center space-x-2">
-                          <SafeIcon icon={FiCheck} />
-                          <span>Released on Rapify</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                        {!isContentReleased(track) && !track.inAlbum ? (
+                          <button
+                            onClick={() => releaseContent(track)}
+                            disabled={isReleasing && releasingContentId === track.id}
+                            className={`w-full text-sm font-semibold py-3 px-4 rounded-game transition-all ${
+                              isReleasing && releasingContentId === track.id
+                                ? 'bg-dark-surface/50 text-text-disabled cursor-not-allowed'
+                                : 'game-button hover-glow'
+                            }`}
+                          >
+                            {isReleasing && releasingContentId === track.id ? (
+                              <div className="flex items-center justify-center space-x-2">
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                <span>Releasing...</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-center space-x-2">
+                                <SafeIcon icon={FiUpload} />
+                                <span>Release on Rapify</span>
+                              </div>
+                            )}
+                          </button>
+                        ) : track.inAlbum ? (
+                          <div className="text-center py-2 text-neon-purple font-semibold text-sm">
+                            📀 Part of Album (Cannot be released separately)
+                          </div>
+                        ) : (
+                          <div className="text-center py-2 text-neon-green font-semibold text-sm flex items-center justify-center space-x-2">
+                            <SafeIcon icon={FiCheck} />
+                            <span>Released on Rapify</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -1361,60 +1386,64 @@ export default function MusicStudioPage() {
               <div>
                 <h3 className="text-base font-bold text-text-primary mb-3">Albums ({albums.length})</h3>
                 <div className="space-y-3">
-                  {albums.map((album) => (
-                    <div key={album.id} className="game-card p-4 shadow-dark">
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <h4 className="font-bold text-text-primary text-sm">{album.title}</h4>
-                          <p className="text-xs text-text-muted">{album.tracks.length} tracks</p>
-                          <p className="text-xs text-text-muted">Created: {album.createdAt}</p>
-                        </div>
-                        <div className="text-right">
-                          <div className="flex items-center space-x-1 mb-1">
-                            {[...Array(5)].map((_, i) => (
-                              <SafeIcon
-                                key={i}
-                                icon={FiStar}
-                                className={`text-xs ${
-                                  i < album.quality ? 'text-neon-orange' : 'text-text-disabled'
-                                }`}
-                              />
-                            ))}
+                  {albums.map((album) => {
+                    if (!album || !album.id) return null;
+                    
+                    return (
+                      <div key={album.id} className="game-card p-4 shadow-dark">
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <h4 className="font-bold text-text-primary text-sm">{safeDisplayText(album.title)}</h4>
+                            <p className="text-xs text-text-muted">{(album.tracks?.length || 0)} tracks</p>
+                            <p className="text-xs text-text-muted">Created: {safeDisplayText(album.createdAt)}</p>
                           </div>
-                          <div className="text-xs text-text-muted">Quality: {album.quality}/10</div>
+                          <div className="text-right">
+                            <div className="flex items-center space-x-1 mb-1">
+                              {[...Array(5)].map((_, i) => (
+                                <SafeIcon
+                                  key={i}
+                                  icon={FiStar}
+                                  className={`text-xs ${
+                                    i < (album.quality || 0) ? 'text-neon-orange' : 'text-text-disabled'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <div className="text-xs text-text-muted">Quality: {album.quality || 0}/10</div>
+                          </div>
                         </div>
-                      </div>
 
-                      {!isContentReleased(album) ? (
-                        <button
-                          onClick={() => releaseContent(album)}
-                          disabled={isReleasing && releasingContentId === album.id}
-                          className={`w-full text-sm font-semibold py-3 px-4 rounded-game transition-all ${
-                            isReleasing && releasingContentId === album.id
-                              ? 'bg-dark-surface/50 text-text-disabled cursor-not-allowed'
-                              : 'game-button hover-glow'
-                          }`}
-                        >
-                          {isReleasing && releasingContentId === album.id ? (
-                            <div className="flex items-center justify-center space-x-2">
-                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                              <span>Releasing...</span>
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-center space-x-2">
-                              <SafeIcon icon={FiUpload} />
-                              <span>Release on Rapify</span>
-                            </div>
-                          )}
-                        </button>
-                      ) : (
-                        <div className="text-center py-2 text-neon-green font-semibold text-sm flex items-center justify-center space-x-2">
-                          <SafeIcon icon={FiCheck} />
-                          <span>Released on Rapify</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                        {!isContentReleased(album) ? (
+                          <button
+                            onClick={() => releaseContent(album)}
+                            disabled={isReleasing && releasingContentId === album.id}
+                            className={`w-full text-sm font-semibold py-3 px-4 rounded-game transition-all ${
+                              isReleasing && releasingContentId === album.id
+                                ? 'bg-dark-surface/50 text-text-disabled cursor-not-allowed'
+                                : 'game-button hover-glow'
+                            }`}
+                          >
+                            {isReleasing && releasingContentId === album.id ? (
+                              <div className="flex items-center justify-center space-x-2">
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                <span>Releasing...</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-center space-x-2">
+                                <SafeIcon icon={FiUpload} />
+                                <span>Release on Rapify</span>
+                              </div>
+                            )}
+                          </button>
+                        ) : (
+                          <div className="text-center py-2 text-neon-green font-semibold text-sm flex items-center justify-center space-x-2">
+                            <SafeIcon icon={FiCheck} />
+                            <span>Released on Rapify</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -1424,64 +1453,68 @@ export default function MusicStudioPage() {
               <div>
                 <h3 className="text-base font-bold text-text-primary mb-3">Music Videos ({musicVideos.length})</h3>
                 <div className="space-y-3">
-                  {musicVideos.map((video) => (
-                    <div key={video.id} className="game-card p-4 shadow-dark">
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <h4 className="font-bold text-text-primary text-sm">{video.title}</h4>
-                          <div className="text-xs text-text-muted">
-                            <div>Track: {video.trackTitle}</div>
-                            <div>Producer: {video.producer} • Director: {video.director}</div>
-                            <div>Location: {video.studio}</div>
+                  {musicVideos.map((video) => {
+                    if (!video || !video.id) return null;
+                    
+                    return (
+                      <div key={video.id} className="game-card p-4 shadow-dark">
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <h4 className="font-bold text-text-primary text-sm">{safeDisplayText(video.title)}</h4>
+                            <div className="text-xs text-text-muted">
+                              <div>Track: {safeDisplayText(video.trackTitle)}</div>
+                              <div>Producer: {safeDisplayText(video.producer)} • Director: {safeDisplayText(video.director)}</div>
+                              <div>Location: {safeDisplayText(video.studio)}</div>
+                            </div>
+                            <p className="text-xs text-text-muted">Created: {safeDisplayText(video.createdAt)}</p>
                           </div>
-                          <p className="text-xs text-text-muted">Created: {video.createdAt}</p>
-                        </div>
-                        <div className="text-right">
-                          <div className="flex items-center space-x-1 mb-1">
-                            {[...Array(5)].map((_, i) => (
-                              <SafeIcon
-                                key={i}
-                                icon={FiStar}
-                                className={`text-xs ${
-                                  i < video.quality ? 'text-neon-orange' : 'text-text-disabled'
-                                }`}
-                              />
-                            ))}
+                          <div className="text-right">
+                            <div className="flex items-center space-x-1 mb-1">
+                              {[...Array(5)].map((_, i) => (
+                                <SafeIcon
+                                  key={i}
+                                  icon={FiStar}
+                                  className={`text-xs ${
+                                    i < (video.quality || 0) ? 'text-neon-orange' : 'text-text-disabled'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <div className="text-xs text-text-muted">Quality: {video.quality || 0}/10</div>
                           </div>
-                          <div className="text-xs text-text-muted">Quality: {video.quality}/10</div>
                         </div>
-                      </div>
 
-                      {!isContentReleased(video) ? (
-                        <button
-                          onClick={() => releaseContent(video)}
-                          disabled={isReleasing && releasingContentId === video.id}
-                          className={`w-full text-sm font-semibold py-3 px-4 rounded-game transition-all ${
-                            isReleasing && releasingContentId === video.id
-                              ? 'bg-dark-surface/50 text-text-disabled cursor-not-allowed'
-                              : 'game-button hover-glow'
-                          }`}
-                        >
-                          {isReleasing && releasingContentId === video.id ? (
-                            <div className="flex items-center justify-center space-x-2">
-                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                              <span>Releasing...</span>
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-center space-x-2">
-                              <SafeIcon icon={FiUpload} />
-                              <span>Release on RapTube</span>
-                            </div>
-                          )}
-                        </button>
-                      ) : (
-                        <div className="text-center py-2 text-neon-green font-semibold text-sm flex items-center justify-center space-x-2">
-                          <SafeIcon icon={FiCheck} />
-                          <span>Released on RapTube</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                        {!isContentReleased(video) ? (
+                          <button
+                            onClick={() => releaseContent(video)}
+                            disabled={isReleasing && releasingContentId === video.id}
+                            className={`w-full text-sm font-semibold py-3 px-4 rounded-game transition-all ${
+                              isReleasing && releasingContentId === video.id
+                                ? 'bg-dark-surface/50 text-text-disabled cursor-not-allowed'
+                                : 'game-button hover-glow'
+                            }`}
+                          >
+                            {isReleasing && releasingContentId === video.id ? (
+                              <div className="flex items-center justify-center space-x-2">
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                <span>Releasing...</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-center space-x-2">
+                                <SafeIcon icon={FiUpload} />
+                                <span>Release on RapTube</span>
+                              </div>
+                            )}
+                          </button>
+                        ) : (
+                          <div className="text-center py-2 text-neon-green font-semibold text-sm flex items-center justify-center space-x-2">
+                            <SafeIcon icon={FiCheck} />
+                            <span>Released on RapTube</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
